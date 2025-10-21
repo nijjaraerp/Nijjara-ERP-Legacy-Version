@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nijjara • Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/stonehenge" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+
+  <style>
+    :root{
+      --dark-forest:#0a1a0d;
+      --ancient-wood:#2d1810;
+      --river-black:#1a1a1a;
+      --moonlight:#b8c5d1;
+      --gold:#b8860b;
+    }
+    
+    *{font-family:'Cairo',sans-serif; scrollbar-width:none; -ms-overflow-style:none;}
+    *::-webkit-scrollbar{display:none;}
+    body{background:var(--dark-forest); min-height:100vh; overflow-x:hidden;}
+    .moonbeam-flow{position:fixed; inset:0; pointer-events:none; z-index:-1;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(184,197,209,.08) 0%, transparent 40%),
+        radial-gradient(circle at 70% 80%, rgba(184,197,209,.05) 0%, transparent 30%);
+      animation:moonFlow 15s ease-in-out infinite}
+    @keyframes moonFlow{0%,100%{opacity:.3} 50%{opacity:.6}}
+    .glass-3d{background:var(--ancient-wood); border:2px solid rgba(184,197,209,.2);
+      box-shadow:0 20px 40px rgba(0,0,0,.8),0 10px 20px rgba(184,197,209,.1),
+                 inset 0 2px 4px rgba(184,197,209,.1), inset 0 -2px 4px rgba(0,0,0,.5);
+      position:relative; border-radius:24px}
+    .glass-3d::before{content:''; position:absolute; top:1px; left:1px; right:1px; height:30%;
+      background:linear-gradient(180deg, rgba(184,197,209,.1) 0%, transparent 100%); border-radius:inherit}
+    .input-3d{background:var(--river-black); border:1px solid rgba(184,197,209,.3); color:var(--moonlight);
+      box-shadow:0 4px 15px rgba(0,0,0,.6), inset 0 2px 4px rgba(0,0,0,.8), inset 0 -1px 2px rgba(184,197,209,.1);
+      transition:.4s cubic-bezier(.4,0,.2,1)}
+    .input-3d:focus{border-color:var(--moonlight); transform:translateY(-2px);
+      box-shadow:0 0 20px rgba(184,197,209,.3), 0 8px 25px rgba(0,0,0,.7),
+                 inset 0 2px 4px rgba(0,0,0,.8), inset 0 -1px 2px rgba(184,197,209,.2)}
+    .ancient-tree-btn{background:var(--ancient-wood); color:var(--moonlight); border:3px solid rgba(184,197,209,.4);
+      border-radius:24px; padding:16px; font-weight:700;
+      box-shadow:0 12px 30px rgba(0,0,0,.8), 0 6px 15px rgba(184,197,209,.1),
+                 inset 0 4px 8px rgba(184,197,209,.15), inset 0 -4px 8px rgba(0,0,0,.7);
+      transition:.5s cubic-bezier(.4,0,.2,1)}
+    .ancient-tree-btn:hover{transform:translateY(-4px) scale(1.02); border-color:rgba(184,197,209,.7)}
+    .fade-in{animation:fadeIn 1s ease-out}
+    @keyframes fadeIn{from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)}}
+    .title-glow{color:var(--moonlight); text-shadow:0 0 20px rgba(184,197,209,.5), 0 4px 8px rgba(0,0,0,.8)}
+
+    /* === NIJJARA BRAND === */
+@import url('https://fonts.googleapis.com/css2?family=Rye&display=swap');
+.brand-wrap{ display:flex; justify-content:center; margin-bottom:2.5rem; }
+
+.brand {
+  /* force LTR for the logo only */
+  direction:ltr; unicode-bidi:isolate;
+  font-family: 'Rye', serif;
+  font-weight: 400;
+  font-style: normal;
+  color:var(--moonlight);
+  line-height:1;
+  letter-spacing:1px;
+  /* size may differ per page; tweak if needed */
+  font-size:135px; 
+  position:relative;
+  display:inline-block;
+}
+
+.brand .word { 
+  font-family:'Rye', serif;
+  position:relative; 
+  display:inline-flex; 
+  align-items:flex-end;
+}
+
+.brand .left { /* “Nijj” */
+font-family:'Rye', serif;
+  display:inline-block;
+}
+
+.brand .ara {  /* “ara” */
+font-family:'Rye', serif;
+  display:inline-block;
+  position:relative;
+  padding-left:0.06em; /* subtle breathing room between j and a */
+}
+
+.brand .ara .tagline {
+  position:absolute;
+  left:0; right:0; bottom:-18px;   /* sits directly under the “ara” box */
+  text-align:center;
+  font-family:'Rye', serif;
+  font-size:14px;                   /* adjust per page */
+  letter-spacing:.3px;
+  color:rgba(184,197,209,.85);
+  white-space:nowrap;
+  pointer-events:none;
+}
+
+    /* Password toggle */
+    .password-container{position:relative}
+    .password-toggle{position:absolute; left:20px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:rgba(184,197,209,.7); cursor:pointer; padding:8px; border-radius:8px}
+    .password-toggle:hover{color:var(--moonlight); background:rgba(184,197,209,.1)}
+
+    #loginBtn.good{ box-shadow:0 0 0 2px #0fa34a inset, 0 0 18px rgba(15,163,74,.6); }
+#loginBtn.bad { box-shadow:0 0 0 2px #b51c1c inset, 0 0 18px rgba(181,28,28,.6); }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="moonbeam-flow"></div>
+
+  <div class="w-full max-w-md">
+    <!-- Branded title -->
+<div class="brand-wrap fade-in">
+  <h1 class="brand">
+    <span class="word">
+      <span class="left">Nijj</span><span class="ara">ara
+        <span class="tagline">for contracting &amp; wood crafting</span>
+      </span>
+    </span>
+  </h1>
+</div>
+
+
+    <div class="glass-3d p-10 fade-in">
+      <div id="login-message" class="text-center text-red-500 mb-4"></div>
+
+      <form id="login-form" class="space-y-8" novalidate>
+        <div>
+          <label class="block mb-3 font-semibold text-lg" style="color:var(--moonlight);opacity:.9">اسم المستخدم</label>
+          <input id="username" type="text" required class="w-full px-6 py-4 rounded-2xl input-3d text-lg" placeholder="اسم المستخدم"/>
+        </div>
+
+        <div class="password-container">
+          <label class="block mb-3 font-semibold text-lg" style="color:var(--moonlight);opacity:.9">كلمة السر</label>
+          <input id="password" type="password" required class="w-full px-6 py-4 pl-20 rounded-2xl input-3d text-lg" placeholder="كلمة السر"/>
+          <button type="button" id="passwordToggle" class="password-toggle" onclick="togglePassword()">إظهار</button>
+        </div>
+
+        <button id="loginBtn" type="submit" class="ancient-tree-btn w-full">تسجيل الدخول</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  /* ===== Toast (style + helper) ===== */
+  (function ensureToastStyles(){
+    if (document.getElementById('toastStyles')) return;
+    const css = `
+      .toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:10px}
+      .toast{min-width:240px;max-width:90vw;padding:12px 16px;border-radius:12px;color:#fff;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.35);opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s}
+      .toast.show{opacity:1;transform:translateY(0)}
+      .toast.ok{background:#0c5e2b}
+      .toast.err{background:#7a0b0b}
+    `;
+    const s=document.createElement('style'); s.id='toastStyles'; s.textContent=css; document.head.appendChild(s);
+  })();
+  function showToast(msg,type='ok',ms=2200){
+    let wrap=document.getElementById('toastWrap');
+    if(!wrap){ wrap=document.createElement('div'); wrap.id='toastWrap'; wrap.className='toast-wrap'; document.body.appendChild(wrap); }
+    const t=document.createElement('div'); t.className=`toast ${type==='err'?'err':'ok'}`; t.textContent=msg;
+    wrap.appendChild(t); requestAnimationFrame(()=>t.classList.add('show'));
+    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),200); }, ms);
+  }
+
+  /* ===== Drafts cleaner (used on successful login to start fresh session) ===== */
+  function clearAllDrafts(){
+    try{
+      const ks=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i)||''; if(k.startsWith('DF:')) ks.push(k); }
+      ks.forEach(k=>localStorage.removeItem(k));
+    }catch(e){}
+  }
+
+  /* ===== Show/Hide password ===== */
+  function togglePassword(){
+    const i=document.getElementById('password');
+    const b=document.getElementById('passwordToggle');
+    const sh=i.type==='password';
+    i.type=sh?'text':'password';
+    b.textContent=sh?'إخفاء':'إظهار';
+  }
+  window.togglePassword = togglePassword; // in case it's called inline
+
+  /* ===== Login result handlers ===== */
+  function onLoginSuccess(res){
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = false;
+
+    if(res?.success){
+      // green glow + toast
+      btn.classList.remove('bad'); btn.classList.add('good');
+      showToast('تم تسجيل الدخول بنجاح','ok');
+
+      // start a clean session (drafts cleared on new login)
+      clearAllDrafts();
+
+      // small visual pause, then go
+      setTimeout(()=>{
+        window.location.href = (res.redirectUrl || '?page=dashboard');
+      }, 500);
+      return;
+    }
+
+    // failure (unexpected success=false)
+    btn.classList.remove('good'); btn.classList.add('bad');
+    showToast(res?.message || 'خطأ في الدخول','err');
+
+    const box=document.getElementById('login-message');
+    if(box) box.textContent=res?.message||'خطأ في الدخول';
+    btn.textContent='تسجيل الدخول';
+  }
+
+  function onLoginFailure(err){
+    const btn=document.getElementById('loginBtn');
+    btn.disabled=false; btn.classList.remove('good'); btn.classList.add('bad');
+    showToast('خطأ في الاتصال','err');
+
+    const box=document.getElementById('login-message');
+    if(box) box.textContent='خطأ في الاتصال';
+    console.error(err);
+    btn.textContent='تسجيل الدخول';
+  }
+
+  /* ===== Submit ===== */
+  document.getElementById('login-form').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const btn=document.getElementById('loginBtn');
+    // reset previous glow
+    btn.classList.remove('good','bad');
+
+    const u=document.getElementById('username').value.trim();
+    const p=document.getElementById('password').value;
+
+    if(!u || !p){
+      showToast('أدخل اسم المستخدم وكلمة المرور','err');
+      btn.classList.add('bad');
+      return;
+    }
+
+    btn.textContent='جاري تسجيل الدخول...';
+    btn.disabled=true;
+
+    google.script.run
+      .withSuccessHandler(onLoginSuccess)
+      .withFailureHandler(onLoginFailure)
+      .login(u,p);
+  });
+  
+</script>
+</body>
+</html>
