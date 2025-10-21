@@ -1,0 +1,3550 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Moonlit Forest Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cairo:wght@300;400;600;700&display=swap');
+
+        :root {
+            --dark-forest: #0a1a0d;
+            --ancient-wood: #2d1810;
+            --river-black: #1a1a1a;
+            --moonlight: #b8c5d1
+        }
+
+        * {
+            font-family: 'Cairo', sans-serif;
+            scrollbar-width: none;
+            -ms-overflow-style: none
+        }
+
+        *::-webkit-scrollbar {
+            display: none
+        }
+
+        body {
+            background: var(--dark-forest);
+            min-height: 100vh;
+            overflow-x: hidden
+        }
+
+        .moonbeam-flow {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(184, 197, 209, .08) 0%, transparent 40%),
+                radial-gradient(circle at 70% 80%, rgba(184, 197, 209, .05) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+            animation: moonFlow 15s ease-in-out infinite
+        }
+
+        @keyframes moonFlow {
+
+            0%,
+            100% {
+                opacity: .3
+            }
+
+            50% {
+                opacity: .6
+            }
+        }
+
+        .glass-3d {
+            background: var(--ancient-wood);
+            border: 2px solid rgba(184, 197, 209, .2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .8), 0 10px 20px rgba(184, 197, 209, .1), inset 0 2px 4px rgba(184, 197, 209, .1), inset 0 -2px 4px rgba(0, 0, 0, .5)
+        }
+
+        .title-glow {
+            font-family: 'Cinzel', serif;
+            color: var(--moonlight);
+            text-shadow: 0 0 20px rgba(184, 197, 209, .5), 0 4px 8px rgba(0, 0, 0, .8)
+        }
+
+        .tree-sidebar {
+            background: var(--ancient-wood);
+            border-left: 3px solid rgba(184, 197, 209, .3);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, .8), inset -2px 0 4px rgba(0, 0, 0, .5), inset 2px 0 4px rgba(184, 197, 209, .1)
+        }
+
+        .tree-branch {
+            background: var(--river-black);
+            border: 1px solid rgba(184, 197, 209, .2);
+            border-radius: 15px;
+            margin: 8px 0;
+            transition: all .4s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .6), inset 0 1px 2px rgba(184, 197, 209, .05)
+        }
+
+        .tree-leaf {
+            background: transparent;
+            border: none;
+            color: rgba(184, 197, 209, .7);
+            padding: 12px 24px;
+            border-radius: 10px;
+            margin: 4px 0;
+            transition: .3s
+        }
+
+        .tree-leaf:hover {
+            background: rgba(184, 197, 209, .1);
+            color: var(--moonlight);
+            transform: translateX(-8px)
+        }
+
+        .tree-leaf.active {
+            background: linear-gradient(135deg, #8b6914 0%, #b8860b 100%);
+            color: #1a0f08;
+            font-weight: 700
+        }
+
+        .kpi-card {
+            background: var(--river-black);
+            border: 1px solid rgba(184, 197, 209, .2);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .6), inset 0 1px 2px rgba(184, 197, 209, .05);
+            position: relative
+        }
+
+        .kpi-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #8b6914 0%, #b8860b 50%, #8b6914 100%)
+        }
+
+        .chart-card {
+            background: var(--ancient-wood);
+            border: 2px solid rgba(184, 197, 209, .2);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .8), 0 8px 20px rgba(184, 197, 209, .1), inset 0 2px 4px rgba(184, 197, 209, .1)
+        }
+
+        /* .floating-moon {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #8b6914 0%, #b8860b 50%, #d4af37 100%);
+      border-radius: 50%;
+      border: 3px solid rgba(184, 197, 209, .4);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, .8), 0 8px 20px rgba(139, 105, 20, .3);
+      cursor: pointer;
+      z-index: 1000;
+      animation: moonFloat 3s ease-in-out infinite
+    } */
+
+        /* @keyframes moonFloat {
+  
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+  
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+   */
+        /* Modal */
+        .form-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .7);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .form-modal-card {
+            background: var(--ancient-wood);
+            border: 2px solid rgba(184, 197, 209, .2);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .8);
+            max-width: 1100px;
+            width: 95%;
+            max-height: 90vh;
+            overflow: auto
+        }
+
+        .hidden {
+            display: none
+        }
+
+        /* Darkest green/red buttons */
+        .btn-save {
+            background: #0f3a1a;
+            color: #e9f5ec;
+            border: 1px solid #144d25;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .6), inset 0 1px 2px rgba(255, 255, 255, .08);
+        }
+
+        .btn-save:hover {
+            filter: brightness(1.08);
+        }
+
+        .btn-close {
+            background: #3a0f10;
+            color: #fdecec;
+            border: 1px solid #5c1718;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .6), inset 0 1px 2px rgba(255, 255, 255, .08);
+        }
+
+        .btn-close:hover {
+            filter: brightness(1.08);
+        }
+
+        /* Attachment label (avoid black) */
+        .attach-label {
+            color: var(--moonlight);
+            /* light grey-blue used in the theme */
+            opacity: .9;
+            font-weight: 600;
+        }
+
+        /* — Compact tab shelf — */
+        .tab-shelf {
+            background: var(--ancient-wood);
+            border: 2px solid rgba(184, 197, 209, .25);
+            border-radius: 18px;
+            padding: 6px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .6), inset 0 2px 4px rgba(184, 197, 209, .08);
+        }
+
+        /* Base button look (small, pill, subtle) */
+        .tab-btn {
+            position: relative;
+            border-radius: 12px;
+            padding: 8px 14px;
+            /* ↓ smaller */
+            font-weight: 600;
+            font-size: .92rem;
+            /* ~14.7px */
+            line-height: 1;
+            border: 1px solid rgba(139, 105, 20, .35);
+            background: linear-gradient(135deg, #3d2f0a 0%, #2d1f05 50%, #1a0f08 100%);
+            color: rgba(184, 197, 209, .8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .45), inset 0 1px 2px rgba(0, 0, 0, .5);
+            transition: all .25s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(139, 105, 20, .55);
+            color: var(--moonlight);
+        }
+
+        /* Active state: refined glow, not bulky */
+        .tab-active {
+            background: linear-gradient(135deg, #8b6914 0%, #b8860b 55%, #8b6914 100%);
+            color: #1a0f08 !important;
+            border-color: #b8860b !important;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, .55), 0 3px 8px rgba(184, 134, 11, .25), inset 0 1px 2px rgba(255, 255, 255, .18);
+            transform: translateY(-2px);
+        }
+
+        .tab-inactive {
+            /* keep for JS toggling */
+        }
+
+        /* Horizontal scroll nicer on small screens */
+        .tab-shelf .flex {
+            gap: .4rem
+        }
+
+        @media (max-width: 768px) {
+            .tab-btn {
+                padding: 7px 12px;
+                font-size: .88rem;
+            }
+        }
+
+        .input-3d,
+        .select-3d {
+            background: var(--river-black);
+            border: 1px solid rgba(184, 197, 209, .3);
+            color: var(--moonlight);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .6), inset 0 2px 4px rgba(0, 0, 0, .8)
+        }
+
+        .section-card {
+            padding: 14px;
+            margin: 12px 0;
+        }
+
+        .section-card .grid {
+            row-gap: 14px;
+            column-gap: 18px;
+        }
+
+        .section-card label {
+            font-size: .95rem;
+        }
+
+        .req:after {
+            content: " *";
+            color: #f87171
+        }
+
+        .user-menu {
+            background: var(--ancient-wood);
+            border: 2px solid rgba(184, 197, 209, .3);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .8);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 200px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: .3s
+        }
+
+        .user-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0)
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #8b6914 0%, #b8860b 100%);
+            border-radius: 50%;
+            border: 2px solid rgba(184, 197, 209, .4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a0f08;
+            font-weight: 700
+        }
+
+        /* Attachment labels inside employee profile */
+        .attachment-label {
+            color: var(--moonlight);
+            /* matches the rest of your UI font color */
+            font-size: 14px;
+        }
+
+        /* ===== Autosuggest (global) ===== */
+        .autosuggest-panel {
+            position: relative;
+            background: rgba(184, 197, 209, .08);
+            /* soft moon tint */
+            border: 1px solid rgba(184, 197, 209, .25);
+            color: var(--moonlight);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
+            z-index: 50;
+        }
+
+        .autosuggest-item {
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--moonlight);
+        }
+
+        .autosuggest-item:hover {
+            background: rgba(184, 197, 209, .14);
+        }
+
+        /* ==== Card typography / contrast (HR + Projects) ==== */
+        :root {
+            --card-title: #EAF1F8;
+            /* headers */
+            --card-body: #CFD9E4;
+            /* regular lines */
+            --card-muted: #9AA9BA;
+            /* secondary/meta */
+            --card-accent: #72F0A0;
+            /* status pill text */
+            --deep-wood: #2d1810;
+        }
+
+        /* base text color inside cards */
+        #empCards .glass-3d,
+        #prjCards .glass-3d {
+            color: var(--card-body);
+        }
+
+        /* titles */
+        #empCards .glass-3d .text-lg,
+        #prjCards .glass-3d .text-lg {
+            color: var(--card-title) !important;
+        }
+
+        /* any element we earlier dimmed with opacity utility → make readable */
+        #empCards .glass-3d .opacity-80,
+        #empCards .glass-3d .opacity-85,
+        #empCards .glass-3d .opacity-90,
+        #prjCards .glass-3d .opacity-80,
+        #prjCards .glass-3d .opacity-85,
+        #prjCards .glass-3d .opacity-90 {
+            color: var(--card-body) !important;
+            opacity: 1 !important;
+        }
+
+        /* small labels (e.g., department, city) look slightly muted */
+        #empCards .glass-3d .text-sm,
+        #prjCards .glass-3d .text-sm {
+            color: var(--card-muted);
+        }
+
+        /* status pill */
+        #empCards .glass-3d span[class*="rounded-full"],
+        #prjCards .glass-3d span[class*="rounded-full"] {
+            color: var(--card-accent);
+            background: rgba(0, 255, 100, .12);
+        }
+
+        /* progress bar track stays subtle, but numbers readable */
+        #prjCards .glass-3d .progress-meta,
+        #prjCards .glass-3d .progress-meta span {
+            color: var(--card-body);
+        }
+
+        /* Toasts (semi-transparent) */
+.toast.ok  { background: rgba(16,185,129,.85) !important; color:#fff !important; }
+.toast.err { background: rgba(239,68,68,.85) !important;  color:#fff !important; }
+
+
+   
+    </style>
+    
+    </head>
+
+<body>
+
+  <button id="moduleAddBtn" type="button" class="tab-active px-5 py-3 font-bold hidden" title="إضافة" style="cursor:pointer">
+  + إضافة
+</button>
+  <div class="moonbeam-flow"></div>
+
+<!-- Header -->
+<header class="glass-3d h-20 flex items-center justify-between px-8 relative z-10">
+  <div class="flex items-center gap-4">
+    <div class="relative">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="toggleUserMenu()">
+        <div class="user-avatar">م.خ</div>
+        <span class="text-lg font-semibold" style="color:var(--moonlight)">محمد الخريبي</span>
+      </div>
+
+      <!-- user menu -->
+      <div id="userMenu" class="user-menu">
+        <div class="p-4 space-y-2">
+          <a class="block px-4 py-3 rounded-lg" style="color:var(--moonlight)">الملف الشخصي</a>
+          <a class="block px-4 py-3 rounded-lg" style="color:var(--moonlight)">الإعدادات</a>
+          <hr style="border-color:rgba(184,197,209,.2)" />
+          <!-- make it obviously clickable -->
+          <a id="btnLogout" class="block px-4 py-3 rounded-lg"
+             style="color:var(--moonlight);cursor:pointer">تسجيل الخروج</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="glass-3d rounded-xl p-3" onclick="goHome()" title="الرئيسية">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="color:var(--moonlight)">
+        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+      </svg>
+    </button>
+  </div>
+
+  <h1 class="title-glow text-3xl font-bold">NIJJARA</h1>
+</header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="tree-sidebar w-80 min-h-screen p-6">
+      <div class="space-y-4">
+
+        <!-- HR -->
+        <div class="tree-branch">
+          <button class="w-full text-right p-4 font-bold text-lg flex items-center justify-between" style="color:var(--moonlight)" onclick="toggleBranch('hr')">
+            <span>وحدة الموارد البشرية</span><span id="hr-arrow">▼</span>
+          </button>
+          <div id="hr-subtabs" class="px-4 pb-4 space-y-1">
+            <button class="tree-leaf w-full text-right" data-form-key="EMP001" onclick="selectSubTab('hr','employees',this)">بيانات الموظفين</button>
+            <button class="tree-leaf w-full text-right" data-form-key="ATT001" onclick="selectSubTab('hr','attendance',this)">الحضور والانصراف</button>
+            <button class="tree-leaf w-full text-right" data-form-key="LEAVE001" onclick="selectSubTab('hr','leaves',this)">طلبات الإجازات والأعذار</button>
+            <button class="tree-leaf w-full text-right" data-form-key="ABS001" onclick="selectSubTab('hr','absences',this)">الغياب والخصومات</button>
+            <button class="tree-leaf w-full text-right" data-form-key="OT001" onclick="selectSubTab('hr','overtime',this)">ساعات العمل الإضافية</button>
+            <button class="tree-leaf w-full text-right" data-form-key="ADV001" onclick="selectSubTab('hr','advances',this)">السلف الشخصية</button>
+            <button class="tree-leaf w-full text-right" data-form-key="PAY001" onclick="selectSubTab('hr','payroll',this)">كشوف المرتبات</button>
+          </div>
+        </div>
+
+        <!-- Projects -->
+        <div class="tree-branch">
+          <button class="w-full text-right p-4 font-bold text-lg flex items-center justify-between" style="color:var(--moonlight)" onclick="toggleBranch('projects')">
+            <span>المشاريع</span><span id="projects-arrow">▼</span>
+          </button>
+          <div id="projects-subtabs" class="px-4 pb-4 space-y-1 hidden">
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('projects','active',this)">المشاريع النشطة</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('projects','clients',this)">قائمة العملاء</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('projects','documents',this)">منشئ المستندات</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('projects','analysis',this)">تحليل المشاريع</button>
+          </div>
+        </div>
+
+        <!-- Finance -->
+        <div class="tree-branch">
+          <button class="w-full text-right p-4 font-bold text-lg flex items-center justify-between" style="color:var(--moonlight)" onclick="toggleBranch('finance')">
+            <span>المالية</span><span id="finance-arrow">▼</span>
+          </button>
+          <div id="finance-subtabs" class="px-4 pb-4 space-y-1 hidden">
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('finance','dashboard',this)">لوحة التحكم المالية</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('finance','direct-expenses',this)">المصروفات المباشرة</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('finance','indirect-expenses',this)">المصروفات غير المباشرة</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('finance','revenues',this)">الإيرادات</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('finance','materials',this)">كتالوج المواد</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('finance','custody',this)">العهد</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('finance','analysis',this)">التحليل المالي</button>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="tree-branch">
+          <button class="w-full text-right p-4 font-bold text-lg flex items-center justify-between" style="color:var(--moonlight)" onclick="toggleBranch('settings')">
+            <span>إعدادات النظام</span><span id="settings-arrow">▼</span>
+          </button>
+          <div id="settings-subtabs" class="px-4 pb-4 space-y-1 hidden">
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('settings','users',this)">إدارة المستخدمين</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('settings','system',this)">إعدادات النظام</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('settings','permissions',this)">صلاحيات الوصول</button>
+            <button class="tree-leaf w-full text-right" onclick="selectSubTab('settings','logs',this)">سجل النشاطات</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 p-8">
+      <div id="dashboard-home" class="fade-in">
+        <!-- KPIs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="kpi-card p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-3xl">👥</div>
+              <div class="text-right"><p class="text-sm" style="color:var(--moonlight);opacity:.7">إجمالي الموظفين</p><p class="text-3xl font-bold" style="color:var(--moonlight)">247</p></div>
+            </div>
+            <div class="flex items-center text-sm"><span class="text-green-400">↗ +5.2%</span><span class="mr-2" style="color:var(--moonlight);opacity:.6">من الشهر الماضي</span></div>
+          </div>
+
+          <div class="kpi-card p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-3xl">📊</div>
+              <div class="text-right"><p class="text-sm" style="color:var(--moonlight);opacity:.7">المشاريع النشطة</p><p class="text-3xl font-bold" style="color:var(--moonlight)">18</p></div>
+            </div>
+            <div class="flex items-center text-sm"><span class="text-blue-400">↗ +12.5%</span><span class="mr-2" style="color:var(--moonlight);opacity:.6">من الشهر الماضي</span></div>
+          </div>
+
+          <div class="kpi-card p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-3xl">💰</div>
+              <div class="text-right"><p class="text-sm" style="color:var(--moonlight);opacity:.7">الإيرادات الشهرية</p><p class="text-3xl font-bold" style="color:var(--moonlight)">2.4M</p></div>
+            </div>
+            <div class="flex items-center text-sm"><span class="text-green-400">↗ +8.1%</span><span class="mr-2" style="color:var(--moonlight);opacity:.6">من الشهر الماضي</span></div>
+          </div>
+
+          <div class="kpi-card p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-3xl">⚠️</div>
+              <div class="text-right"><p class="text-sm" style="color:var(--moonlight);opacity:.7">التنبيهات</p><p class="text-3xl font-bold text-yellow-400">7</p></div>
+            </div>
+            <div class="flex items-center text-sm"><span class="text-red-400">↗ +2</span><span class="mr-2" style="color:var(--moonlight);opacity:.6">تنبيهات جديدة</span></div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="chart-card p-6">
+            <h3 class="text-xl font-bold mb-6" style="color:var(--moonlight)">الحضور الشهري</h3>
+            <canvas id="attendanceChart" width="400" height="200"></canvas>
+          </div>
+          <div class="chart-card p-6">
+            <h3 class="text-xl font-bold mb-6" style="color:var(--moonlight)">الإيرادات والمصروفات</h3>
+            <canvas id="financeChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div id="dynamic-content" class="hidden"></div>
+    </main>
+  </div>
+
+  <!-- Floating action to open dynamic form -->
+  <!-- <div id="floatingMoon" class="floating-moon hidden" title="فتح النموذج" onclick="openForm()"></div> -->
+
+  <!-- Form Modal -->
+  <div id="formOverlay" class="form-modal-overlay hidden">
+    <div id="formModal" class="form-modal-card">
+      <div class="p-6 flex items-center justify-between">
+        <h2 id="formTitle" class="text-2xl font-bold" style="color:var(--moonlight)"></h2>
+        <button id="formClose" class="text-2xl" style="color:var(--moonlight)">&times;</button>
+      </div>
+      <div class="px-6 pb-6" id="formBody"></div>
+      <div class="px-6 pb-6 flex justify-end gap-3">
+        <button id="formSaveBtn" class="btn-save rounded-xl px-8 py-3 font-bold">حفظ</button>
+<button class="btn-close rounded-xl px-6 py-3 font-bold" onclick="closeFormModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ====================== Helpers & Header ====================== */
+
+
+
+/* ===== Harden all google.script.run calls with a default failure handler ===== */
+(function hardenGoogleRun(){
+  if (!window.google || !google.script || !google.script.run) return;
+
+  const DEFAULT_FAIL = (e)=>{
+    console.error('[server error]', e);
+    try { showToast('حدث خطأ في الخادم','err'); } catch(_) {}
+  };
+
+  const makeProxy = (runObj, state={ hasFail:false }) => new Proxy(runObj, {
+    get(target, prop, recv){
+      // Keep access to the native props if needed
+      const v = Reflect.get(target, prop, recv);
+
+      // Chain-aware: remember when the caller sets a failure handler
+      if (prop === 'withFailureHandler'){
+        return (fn)=>{
+          const next = target.withFailureHandler(fn);
+          return makeProxy(next, { hasFail: true });
+        };
+      }
+
+      if (prop === 'withSuccessHandler'){
+        return (fn)=>{
+          const next = target.withSuccessHandler(fn);
+          return makeProxy(next, state);
+        };
+      }
+
+      // When a server method is finally invoked, ensure a failure handler exists
+      if (typeof v === 'function'){
+        return (...args)=>{
+          const t = state.hasFail ? target : target.withFailureHandler(DEFAULT_FAIL);
+          return t[prop].apply(t, args);
+        };
+      }
+      return v;
+    }
+  });
+
+  // Replace run with hardened proxy
+  google.script.run = makeProxy(google.script.run);
+})();
+// one-shot edit seed between "openEmployee/Profile" -> openForm
+window.__DF_SEED = null;
+/* ====================== Pretty Confirm Modal (Promise) ====================== */
+/* Pretty Confirm modal styles (load once) */
+(function ensureConfirmStyles(){
+  if (document.getElementById('confirmStyles')) return;
+  const css = `
+  .cfm-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:99998;opacity:0;transition:opacity .15s ease}
+  .cfm-backdrop.show{opacity:1}
+  .cfm-card{min-width:320px;max-width:92vw;background:var(--ancient-wood,#3a2317);color:var(--moonlight,#e3e9f3);
+            border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.45);padding:18px 20px;border:1px solid rgba(184,197,209,.18);
+            transform:translateY(8px);transition:transform .18s ease}
+  .cfm-backdrop.show .cfm-card{transform:translateY(0)}
+  .cfm-title{font-size:18px;font-weight:800;margin-bottom:10px}
+  .cfm-msg{opacity:.9;margin-bottom:18px;line-height:1.6}
+  .cfm-row{display:flex;gap:10px;justify-content:flex-end}
+  .cfm-btn{padding:10px 16px;border-radius:12px;font-weight:800;border:1px solid rgba(255,255,255,.12);cursor:pointer}
+  .cfm-ok{background:#0c5e2b;color:#fff}
+  .cfm-cancel{background:#7a0b0b;color:#fff}
+  `;
+  const s=document.createElement('style'); s.id='confirmStyles'; s.textContent=css; document.head.appendChild(s);
+})();
+
+/** askConfirm(message, title?) -> Promise<boolean> */
+function askConfirm(message, title='تأكيد') {
+  return new Promise(resolve=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'cfm-backdrop';
+    wrap.innerHTML = `
+      <div class="cfm-card" role="dialog" aria-modal="true">
+        <div class="cfm-title">${title}</div>
+        <div class="cfm-msg">${message || ''}</div>
+        <div class="cfm-row">
+          <button class="cfm-btn cfm-cancel">إلغاء</button>
+          <button class="cfm-btn cfm-ok">موافق</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    requestAnimationFrame(()=>wrap.classList.add('show'));
+
+    const okBtn = wrap.querySelector('.cfm-ok');
+    const cancelBtn = wrap.querySelector('.cfm-cancel');
+    const cleanup = (val)=>{ wrap.classList.remove('show'); setTimeout(()=>wrap.remove(),150); resolve(val); };
+
+    okBtn.addEventListener('click', ()=>cleanup(true));
+    cancelBtn.addEventListener('click', ()=>cleanup(false));
+    wrap.addEventListener('click', (e)=>{ if(e.target===wrap) cleanup(false); });
+    document.addEventListener('keydown', function esc(e){ if(e.key==='Escape'){ document.removeEventListener('keydown', esc); cleanup(false); }});
+  });
+}
+// toast (CSS injected once)
+(function ensureToastStyles(){
+  if (document.getElementById('toastStyles')) return;
+  const css = `
+  .toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:10px}
+  .toast{min-width:240px;max-width:90vw;padding:12px 16px;border-radius:12px;color:#fff;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.35);opacity:0;transform:translateY(10px);transition:opacity .2s ease,transform .2s ease}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .toast.ok{background:#0c5e2b}
+  .toast.err{background:#7a0b0b}
+  `;
+  const s=document.createElement('style'); s.id='toastStyles'; s.textContent=css; document.head.appendChild(s);
+})();
+function showToast(msg,type='ok',ms=2200){
+  let wrap = document.getElementById('toastWrap');
+  if(!wrap){ wrap=document.createElement('div'); wrap.id='toastWrap'; wrap.className='toast-wrap'; document.body.appendChild(wrap); }
+  const t=document.createElement('div'); t.className=`toast ${type==='err'?'err':'ok'}`; t.textContent=msg;
+  wrap.appendChild(t); requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),200); }, ms);
+}
+
+/* ===== Safe server runner (always adds success + failure handlers) ===== */
+function callServer(fnName, args = [], onOk = null, onErr = null) {
+  const ok = typeof onOk === 'function' ? onOk : ()=>{};
+  const err = typeof onErr === 'function'
+      ? onErr
+      : (e)=>{ console.error('[server error]', e); showToast('حدث خطأ في الخادم','err'); };
+
+  const chain = google.script.run.withSuccessHandler(ok).withFailureHandler(err);
+  if (typeof chain[fnName] !== 'function') {
+    console.error('Unknown server method:', fnName);
+    showToast('دالة خادم غير معروفة: ' + fnName, 'err');
+    return;
+  }
+  // call with spread args
+  return chain[fnName].apply(chain, args);
+}
+
+
+const $ = (id)=>document.getElementById(id);
+window.__DF_SEED = null;   // one-shot edit seed used between openEmployeeProfile -> openForm
+// ===== Flatpickr loader (loads once) =====
+function loadFlatpickrOnce(){
+  if (window.__flatpickrLoading) return window.__flatpickrLoading;
+  if (window.flatpickr) return Promise.resolve();
+
+  window.__flatpickrLoading = new Promise((resolve, reject)=>{
+    // CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
+    document.head.appendChild(link);
+
+    // JS
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
+    s.onload = ()=>resolve();
+    s.onerror = (e)=>reject(e);
+    document.head.appendChild(s);
+  });
+  return window.__flatpickrLoading;
+}
+/* ========= Logout wiring ========= */
+function wireLogoutButton(){
+  const btn = document.getElementById('btnLogout');
+  if (!btn) return;
+
+  btn.style.cursor = 'pointer';
+  btn.addEventListener('click', async () => {
+    const ok = await askConfirm('هل تريد تسجيل الخروج؟','تأكيد الخروج');
+    if (ok) doLogout();
+  });
+}
+
+
+// call once after DOM is ready
+/* moved to unified DOMContentLoaded handler: wireLogoutMenu() and wireLogoutButton() are called there */
+// ===== Initialize all date/time pickers inside a container =====
+function initDatePickers(container){
+  if (!window.flatpickr) return;
+  const nodes = container.querySelectorAll('input[data-picker]');
+  nodes.forEach(el=>{
+    const kind = el.dataset.picker;
+    const base = {
+      allowInput: true,
+      time_24hr: true,
+      onValueUpdate: () => el.dispatchEvent(new Event('flatpickrValueUpdate', {bubbles:true})),
+      onClose: () => el.dispatchEvent(new Event('flatpickrValueUpdate', {bubbles:true}))
+    };
+    if (kind === 'date'){
+      flatpickr(el, { ...base, dateFormat: 'd/m/Y' });
+    } else if (kind === 'time'){
+      flatpickr(el, { ...base, enableTime: true, noCalendar: true, dateFormat: 'H:i' });
+    } else { // datetime
+      flatpickr(el, { ...base, enableTime: true, dateFormat: 'd/m/Y H:i' });
+    }
+  });
+}
+document.getElementById('moduleAddBtn')?.classList.add('hidden');
+/* ====================== Add Button Wiring (final) ====================== */
+const __ADD_BTN_IDS = ['moduleAddBtn','addBtn','topAddBtn']; // first existing id wins
+
+function __getAddBtn(){
+  for (const id of __ADD_BTN_IDS){
+    const el = document.getElementById(id);
+    if (el) return el;
+  }
+  return null;
+}
+
+/**
+ * setAddButton(formKey, label)
+ * Unified implementation - idempotent and safe.
+ * Exposes global __ADD_BTN_STATE to inspect current state.
+ */
+function setAddButton(formKey, label) {
+  try {
+    window.__ADD_BTN_STATE = window.__ADD_BTN_STATE || { current: null };
+    const container = document.getElementById('topControls') || document.getElementById('module-controls') || document.body;
+    // try to find existing add button placeholder
+    let btn = document.getElementById('globalAddBtn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'globalAddBtn';
+      btn.type = 'button';
+      btn.className = 'btn btn-add';
+      // default click: open new form (clearing draft/seed first)
+      btn.addEventListener('click', function(){
+        try {
+          const fk = (btn.dataset.formkey || btn.dataset.formKey || '').toString().trim();
+          if (!fk) { showToast?.('لا يوجد Form_ID لهذا القسم','err'); return; }
+
+          // ensure we open a NEW blank form: clear local draft + clear one-shot seed
+          try { __df_clear(fk); } catch(e){}
+          try { window.__DF_SEED = null; } catch(e){}
+
+          // also set canonical requested key so openForm can use it
+          window.__REQUESTED_FORM_KEY = fk;
+          try { btn.dataset.formkey = fk; btn.dataset.formKey = fk; } catch(e){}
+
+          // prefer openNewForm if provided (explicit new-mode), otherwise fallback to openForm()
+          if (typeof openNewForm === 'function') return openNewForm(fk, {});
+          if (typeof openForm === 'function') return openForm();
+        } catch(e){ console && console.error('[globalAddBtn.click]', e); }
+      });
+      // append to container (best effort)
+      try {
+        (container.firstElementChild ? container : document.body).appendChild(btn);
+      } catch(e){
+        document.body.appendChild(btn);
+      }
+    }
+    // set both variants of dataset to be defensive (some code uses .formkey, some .formKey)
+    const fk = String(formKey || '').trim();
+    try { btn.dataset.formKey = fk; } catch(e){}
+    try { btn.dataset.formkey = fk; } catch(e){}
+    btn.textContent = (label || btn.textContent || 'إضافة');
+    // visual enable/disable based on presence of formKey
+    if (!fk) btn.style.display = 'none';
+    else btn.style.display = '';
+    window.__ADD_BTN_STATE.current = { formKey: fk, label: btn.textContent };
+    return true;
+  } catch (e) {
+    console && console.error('[setAddButton]', e);
+    return false;
+  }
+}
+
+
+/**
+ * clearAddButton()
+ * Removes/hides the global add button created by setAddButton.
+ */
+function clearAddButton() {
+  try {
+    const btn = document.getElementById('globalAddBtn');
+    if (btn) {
+      // keep in DOM but hide (safer), or remove depending on preference
+      btn.style.display = 'none';
+      // optional: remove dataset
+      btn.dataset.formKey = '';
+      window.__ADD_BTN_STATE = window.__ADD_BTN_STATE || {};
+      window.__ADD_BTN_STATE.current = null;
+    }
+    return true;
+  } catch (e) {
+    console && console.error('[clearAddButton]', e);
+    return false;
+  }
+}
+function toggleUserMenu(){ $('userMenu')?.classList.toggle('show'); }
+
+function goHome(){
+  $('dynamic-content')?.classList.add('hidden');
+  $('dashboard-home')?.classList.remove('hidden');
+  $('floatingMoon')?.classList.add('hidden');
+  document.querySelectorAll('.tree-leaf').forEach(x=>x.classList.remove('active'));
+}
+
+document.addEventListener('click',(e)=>{
+  const m=$('userMenu'), a=document.querySelector('.user-avatar');
+  if(m && a && !m.contains(e.target) && !a.contains(e.target)) m.classList.remove('show');
+  if(e.target?.id==='formOverlay' || e.target?.id==='formClose') closeFormModal();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeFormModal(); });
+
+/* ===== Sidebar: افتح فرع واحد بس، وخلي الكليكات شغّالة ===== */
+function collapseAllBranchesExcept(exceptId){
+  document.querySelectorAll('[id$="-subtabs"]').forEach(p=>{
+    const id = p.id.replace('-subtabs','');
+    if(id !== exceptId) p.classList.add('hidden');
+  });
+  document.querySelectorAll('[id$="-arrow"]').forEach(a=>{
+    const id = a.id.replace('-arrow','');
+    const panel = document.getElementById(id + '-subtabs');
+    a.style.transform =
+      (id === exceptId && panel && !panel.classList.contains('hidden')) ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+}
+
+function toggleBranch(moduleId){
+  const panel = document.getElementById(moduleId + '-subtabs');
+  const arrow = document.getElementById(moduleId + '-arrow');
+  if(!panel || !arrow) return;
+
+  const willOpen = panel.classList.contains('hidden');
+
+  // close others
+  document.querySelectorAll('[id$="-subtabs"]').forEach(p=>{ if(p !== panel) p.classList.add('hidden'); });
+  document.querySelectorAll('[id$="-arrow"]').forEach(a=>{ if(a !== arrow) a.style.transform = 'rotate(0deg)'; });
+
+  if (willOpen){
+    panel.classList.remove('hidden');
+    arrow.style.transform = 'rotate(180deg)';
+
+    const module = (moduleId||'').toLowerCase();
+    if (module === 'hr' || module === 'projects' || module === 'finance'){
+      // show dashboard for the module
+      loadModuleDashboard(module);
+      // Add button disabled (no sub-tab yet)
+      clearAddButton();
+      // Also clear any sub-tab highlight of this module
+      document.querySelectorAll(`.tree-leaf[data-module="${module}"]`).forEach(l=>l.classList.remove('active'));
+    }
+  }else{
+    panel.classList.add('hidden');
+    arrow.style.transform = 'rotate(0deg)';
+  }
+}
+
+
+
+/* ===== اختيار الساب-تاب ===== */
+function selectSubTab(module, subTab, el){
+  // collapse/open branches
+  collapseAllBranchesExcept(module);
+
+  // highlight leaf
+  document.querySelectorAll('.tree-leaf').forEach(l=>l.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  // track context
+  window.__ACTIVE_MODULE = (module||'').toLowerCase();
+  window.__ACTIVE_SUBTAB = (subTab||'').toLowerCase();
+
+  // show content container
+  const home = document.getElementById('dashboard-home');
+  const dyn  = document.getElementById('dynamic-content');
+  if (home) home.classList.add('hidden');
+  if (dyn)  dyn.classList.remove('hidden');
+
+  // map sub-tab -> form key
+  const FORM_KEYS = {
+    hr: { employees: 'EMP001' },
+    projects: { active: 'PRJ001', clients: 'PRJ_CLIENTS01', materials: 'PRJ_MAT001' },
+    finance: { 'direct-expenses': 'DEXP001', 'indirect-repeated': 'INR001', 'indirect-once': 'INO001', revenues: 'REV001' }
+  };
+
+  const key = (FORM_KEYS[module] && FORM_KEYS[module][subTab]) ? FORM_KEYS[module][subTab] : '';
+  if (key) setAddButton(key, el?.textContent?.trim() || '');
+  else     clearAddButton();
+
+  // explicit loaders
+  if (module === 'hr' && subTab === 'employees') {
+    loadHREmployeesView(); return;
+  }
+  if (module === 'projects' && subTab === 'active') {
+    loadProjectsView(); return;
+  }
+  // >>> Add THIS for Finance → Direct Expenses <<<
+  if (module === 'finance' && subTab === 'direct-expenses') {
+    loadFinanceDirectExpensesView(); return;
+  }
+
+  // fallback: generic content if you have one
+  loadSubTabContent(module, subTab);
+}
+// جلوبال برضه
+window.selectSubTab = selectSubTab;
+window.toggleBranch = toggleBranch;
+
+/* ===== تفويض آمن اختياري (مش هيكسر الـ onclick القديمة) ===== */
+(function wireSafeDelegation(){
+  document.addEventListener('click',(e)=>{
+    // زر فتح الفرع لو متوسم بـ data-branch-toggle
+    const branchBtn = e.target.closest('[data-branch-toggle]');
+    if (branchBtn && branchBtn.dataset.branchToggle){
+      e.preventDefault();
+      toggleBranch(branchBtn.dataset.branchToggle);
+      return;
+    }
+
+    // اختيار ساب-تاب لو العنصر عليه data-module / data-subtab
+    const leaf = e.target.closest('.tree-leaf[data-module][data-subtab]');
+    if (leaf){
+      e.preventDefault();
+      selectSubTab(leaf.dataset.module, leaf.dataset.subtab, leaf);
+      return;
+    }
+  }, true); // capture = true
+})();
+
+
+
+
+/* ===== Date helpers: always DD/MM/YYYY ===== */
+function _toDMY_(val){
+  if (!val) return '';
+  // Date object
+  if (val instanceof Date){
+    const d = val.getDate().toString().padStart(2,'0');
+    const m = (val.getMonth()+1).toString().padStart(2,'0');
+    const y = val.getFullYear();
+    return `${d}/${m}/${y}`;
+  }
+  const s = String(val).trim();
+  // ISO date or ISO datetime
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
+  if (iso){
+    const [,y,m,d] = iso;
+    return `${d}/${m}/${y}`;
+  }
+  // 2025/01/07
+  const isoSlash = s.match(/^(\d{4})\/(\d{2})\/(\d{2})$/);
+  if (isoSlash){
+    const [,y,m,d] = isoSlash;
+    return `${d}/${m}/${y}`;
+  }
+  // already d/m/y ? normalize 1-digit to 2-digit
+  const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmy){
+    let [_, d, m, y] = dmy;
+    d = d.padStart(2,'0'); m = m.padStart(2,'0');
+    return `${d}/${m}/${y}`;
+  }
+  // fallback: return as-is
+  return s;
+}
+function _fmtMaybeDate_(v){
+  try{
+    if (v instanceof Date) return _toDMY_(v);
+    const s = String(v||'').trim();
+    if (!s) return '';
+    if (/^\d{4}-\d{2}-\d{2}(?:[T\s].*)?$/.test(s) || /^\d{4}\/\d{2}\/\d{2}$/.test(s) || /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/.test(s)) {
+      return _toDMY_(s);
+    }
+    return s;
+  }catch{return String(v||'');}
+}
+
+/* ====================== Module Dashboard (HR / Projects / Finance) ====================== */
+function loadModuleDashboard(module){
+  // track active context
+  window.__ACTIVE_MODULE = (module||'').toLowerCase();
+  window.__ACTIVE_SUBTAB = ''; // none selected
+
+  const content = $('dynamic-content'); if (!content) return;
+
+  const moduleTitles = {
+    hr: 'لوحة الموارد البشرية',
+    projects: 'لوحة المشاريع',
+    finance: 'لوحة المالية'
+  };
+  const moduleCaptions = {
+    hr: 'نظرة عامة على الموارد البشرية',
+    projects: 'نظرة عامة على المشاريع',
+    finance: 'نظرة عامة على المالية'
+  };
+  const title = moduleTitles[module] || 'لوحة';
+  const caption = moduleCaptions[module] || '';
+
+  // ensure the dashboard area is visible
+  const home = $('dashboard-home');
+  const dyn  = $('dynamic-content');
+  if (home) home.classList.add('hidden');
+  if (dyn)  dyn.classList.remove('hidden');
+
+  // build
+  content.innerHTML = `
+    <div class="fade-in">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold mb-2" style="color:var(--moonlight)">${title}</h2>
+        <p class="text-lg" style="color:var(--moonlight);opacity:.7">${caption}</p>
+      </div>
+
+      ${generateModuleKPIs(module)}
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        <div class="chart-card p-6">
+          <h3 class="text-xl font-bold mb-6" style="color:var(--moonlight)">مؤشرات أساسية</h3>
+          <canvas id="moduleChart1" width="420" height="220"></canvas>
+        </div>
+        <div class="chart-card p-6">
+          <h3 class="text-xl font-bold mb-6" style="color:var(--moonlight)">الاتجاهات</h3>
+          <canvas id="moduleChart2" width="420" height="220"></canvas>
+        </div>
+      </div>
+    </div>`;
+
+  // draw charts
+  setTimeout(()=>initializeModuleCharts(module), 60);
+}
+
+/* ====================== Titles & KPIs ====================== */
+function getSubTabTitle(module, subTab){
+  const t={
+    hr:{employees:'بيانات الموظفين',attendance:'الحضور والانصراف',leaves:'طلبات الإجازات والأعذار',absences:'الغياب والخصومات',overtime:'ساعات العمل الإضافية',advances:'السلف الشخصية',payroll:'كشوف المرتبات'},
+    projects:{active:'المشاريع النشطة',clients:'قائمة العملاء',documents:'منشئ المستندات',analysis:'تحليل المشاريع'},
+    finance:{dashboard:'لوحة التحكم المالية','direct-expenses':'المصروفات المباشرة','indirect-expenses':'المصروفات غير المباشرة',revenues:'الإيرادات',materials:'كتالوج المواد',custody:'العهد',analysis:'التحليل المالي'},
+    settings:{users:'إدارة المستخدمين',system:'إعدادات النظام',permissions:'صلاحيات الوصول',logs:'سجل النشاطات'}
+  };
+  return t[module]?.[subTab] || 'غير محدد';
+}
+
+function generateModuleKPIs(module){
+  const k={
+    hr:[
+      {i:'👥',t:'الموظفين النشطين',v:'247',c:'+5.2%',col:'green'},
+      {i:'📅',t:'معدل الحضور',v:'94.2%',c:'+2.1%',col:'blue'},
+      {i:'🏖️',t:'طلبات الإجازة',v:'23',c:'+7',col:'yellow'},
+      {i:'⏰',t:'ساعات إضافية',v:'156',c:'-12%',col:'red'}
+    ],
+    projects:[
+      {i:'📊',t:'مشاريع نشطة',v:'18',c:'+3',col:'green'},
+      {i:'👥',t:'العملاء',v:'45',c:'+8.5%',col:'blue'},
+      {i:'📋',t:'المهام المكتملة',v:'89%',c:'+5.2%',col:'green'},
+      {i:'⚠️',t:'مهام متأخرة',v:'7',c:'-2',col:'red'}
+    ],
+    finance:[
+      {i:'💰',t:'الإيرادات',v:'2.4M',c:'+8.1%',col:'green'},
+      {i:'💸',t:'المصروفات',v:'1.8M',c:'+3.2%',col:'red'},
+      {i:'📈',t:'صافي الربح',v:'600K',c:'+15.3%',col:'green'},
+      {i:'🏦',t:'الرصيد البنكي',v:'3.2M',c:'+2.1%',col:'blue'}
+    ],
+    settings:[
+      {i:'👤',t:'المستخدمين',v:'52',c:'+3',col:'blue'},
+      {i:'🔐',t:'الصلاحيات',v:'15',c:'0',col:'gray'},
+      {i:'📊',t:'النشاطات اليوم',v:'234',c:'+45%',col:'green'},
+      {i:'⚙️',t:'إعدادات النظام',v:'98%',c:'+1.2%',col:'green'}
+    ]
+  };
+  return `
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      ${(k[module]||k.hr).map((x)=>`
+        <div class="kpi-card p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-3xl">${x.i}</div>
+            <div class="text-right">
+              <p class="text-sm" style="color:var(--moonlight);opacity:.7">${x.t}</p>
+              <p class="text-3xl font-bold" style="color:var(--moonlight)">${x.v}</p>
+            </div>
+          </div>
+          <div class="flex items-center text-sm">
+            <span class="text-${x.col}-400">${x.c.startsWith('+')?'↗':x.c.startsWith('-')?'↘':'→'} ${x.c}</span>
+            <span class="mr-2" style="color:var(--moonlight);opacity:.6">من الشهر الماضي</span>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function loadSubTabContent(module, subTab){
+  const content=$('dynamic-content'); if(!content) return;
+  content.innerHTML=`
+    <div class="fade-in">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold mb-4" style="color:var(--moonlight)">${getSubTabTitle(module,subTab)}</h2>
+        <p class="text-lg" style="color:var(--moonlight);opacity:.7">قسم ${({hr:'الموارد البشرية',projects:'المشاريع',finance:'المالية',settings:'إعدادات النظام'})[module]||''}</p>
+      </div>
+      ${generateModuleKPIs(module,subTab)}
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        <div class="chart-card p-6"><h3 class="text-xl font-bold mb-6" style="color:var(--moonlight)">إحصائيات</h3><canvas id="moduleChart1" width="400" height="200"></canvas></div>
+        <div class="chart-card p-6"><h3 class="text-xl font-bold mb-6" style="color:var(--moonlight)">تحليل البيانات</h3><canvas id="moduleChart2" width="400" height="200"></canvas></div>
+      </div>
+    </div>`;
+  setTimeout(()=>initializeModuleCharts(module,subTab),60);
+}
+/* ====================== Logout wiring ====================== */
+/** Clears all draft keys DF:* safely */
+function clearAllDrafts(){
+  try{
+    const ks=[]; for (let i=0;i<localStorage.length;i++){ const k=localStorage.key(i)||''; if(k.startsWith('DF:')) ks.push(k); }
+    ks.forEach(k=>localStorage.removeItem(k));
+  }catch(e){}
+}
+
+/** Perform logout (server optional) then redirect to login.html (or ?page=login) */
+function doLogout(){
+  try { clearAllDrafts(); } catch(e){}
+  try {
+    google.script.run
+      .withSuccessHandler(()=>{ window.location.href = 'login.html'; })
+      .withFailureHandler(()=>{ window.location.href = 'login.html'; })
+      .logout(); // server may or may not exist
+  } catch(e){
+    // Apps Script not available in local preview
+    window.location.href = 'login.html';
+  }
+}
+
+/** Find the "تسجيل الخروج" item, make it clickable, and bind handler */
+function wireLogoutMenu(){
+  const menu = document.getElementById('userMenu');
+  if (!menu) return;
+
+  const items = Array.from(menu.querySelectorAll('a'));
+  const logoutLink = items.find(a => (a.textContent || '').trim().includes('تسجيل الخروج'));
+  if (!logoutLink) return;
+
+  logoutLink.style.cursor = 'pointer';
+  logoutLink.setAttribute('role','button');
+  logoutLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const ok = await askConfirm('هل تريد تسجيل الخروج؟','تأكيد الخروج');
+    if (ok) doLogout();
+  });
+}
+
+
+// wire on load and whenever header/menu is re-rendered
+/* moved to unified DOMContentLoaded handler: wireLogoutMenu() and wireLogoutButton() are called there */
+/* ====================== List refresh helper ====================== */
+function refreshCurrentList(opts){
+  try{
+    const mod = (window.__ACTIVE_MODULE||'').toLowerCase();
+    const sub = (window.__ACTIVE_SUBTAB||'').toLowerCase();
+    const o   = opts||{};
+    const delay = Number(o.delay||0);
+
+    const run = () => {
+      // Projects → refresh cards/list
+      if (mod === 'projects') {
+        if (typeof window.__PRJ_RUNSEARCH === 'function') {
+          window.__PRJ_RUNSEARCH();
+          return;
+        }
+      }
+
+      // HR → employees list
+      if (mod === 'hr' && (sub === 'employees' || sub === 'active' || !sub)) {
+        if (typeof window.__HR_RUNSEARCH === 'function') {
+          window.__HR_RUNSEARCH();
+          return;
+        }
+      }
+
+      // Fallback: reload sub tab if you have generic loader
+      if (typeof loadSubTabContent === 'function' && mod && sub){
+        loadSubTabContent(mod, sub);
+      }
+    };
+
+    if (delay > 0) setTimeout(run, delay); else run();
+  }catch(e){
+    console.warn('refreshCurrentList failed:', e);
+  }
+}
+
+/* Optional: auto-refresh when any form announces it saved */
+document.addEventListener('df:saved', () => refreshCurrentList({delay:80}));
+
+
+/* ====================== HR: cards + search + Add (wired) ====================== */
+function loadHREmployeesView(){
+  // hide global top-right add
+  document.getElementById('moduleAddBtn')?.classList.add('hidden');
+
+  const content = $('dynamic-content'); if (!content) return;
+
+  content.innerHTML = `
+    <div class="fade-in">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-3xl font-bold" style="color:var(--moonlight)">إدارة الموظفين</h2>
+        <button id="empAddBtn" type="button" class="tab-active px-5 py-3 font-bold" style="cursor:pointer">
+          + إضافة موظف جديد
+        </button>
+      </div>
+
+      <div class="mb-4 flex items-center gap-3">
+        <input id="empSearch" placeholder="ابحث (الاسم، البريد، المنصب، القسم)..."
+               class="flex-1 px-4 py-3 rounded-2xl input-3d text-base">
+        <button id="empSearchBtn" class="tab-active px-5 py-3 font-bold">بحث</button>
+      </div>
+
+      <div id="empAutosuggest" class="autosuggest-panel hidden"></div>
+
+      <!-- Cards grid -->
+      <div id="empCards" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </div>`;
+
+  // --- wire Add (this is the button above Search) ---
+  (function wireAdd(){
+    const add = $('empAddBtn');
+    if (!add) return;
+    add.dataset.formkey = 'EMP001';                         // <-- your Employees Form_ID
+    add.onclick = () => {
+      window.__REQUESTED_FORM_KEY = add.dataset.formkey;
+      openForm();
+    };
+  })();
+
+  const q = $('empSearch');
+  const btn = $('empSearchBtn');
+  const grid = $('empCards');
+  const suggest = $('empAutosuggest');
+
+  function fixMobile(v){ const s = String(v ?? '').trim(); return s ? (s.startsWith('0')?s:'0'+s) : ''; }
+
+  function renderCards(rows){
+    grid.innerHTML = (rows||[]).map(r=>{
+      const status = (r.Status||'').trim()||'نشط';
+      return `
+        <div class="chart-card" style="padding:0">
+          <div class="p-5">
+            <span style="background:#2dbd6e;color:#fff;border-radius:14px;padding:2px 10px;font-weight:700;font-size:12px">${status}</span>
+            <div class="mt-2 font-extrabold text-xl" style="color:var(--moonlight)">${r.Full_Name_AR || r.Full_Name_EN || '(بدون اسم)'}</div>
+            <div class="mt-1 text-sm" style="opacity:.9;color:var(--moonlight)">${r.Job_Title||''}</div>
+
+            <div class="mt-3 space-y-1 text-sm" style="color:var(--moonlight);opacity:.9">
+              <div>📧 ${r.Email||''}</div>
+              <div>🏢 ${r.Department||''}</div>
+              <div>📞 ${fixMobile(r.Mobile_Main)}</div>
+            </div>
+          </div>
+
+          <button class="w-full text-right px-5 py-3 hover:bg-[rgba(184,197,209,.05)]"
+                  data-id="${r.Employee_ID}" style="color:var(--moonlight);border-top:1px solid rgba(184,197,209,.12)">
+            فتح الملف →
+          </button>
+        </div>`;
+    }).join('');
+  }
+
+  function renderSuggest(rows){
+    if (!rows?.length){ suggest.classList.add('hidden'); suggest.innerHTML=''; return; }
+    suggest.classList.remove('hidden');
+    suggest.innerHTML = rows.slice(0,8).map(r=>`
+      <div class="autosuggest-item" data-id="${r.Employee_ID}">
+        ${r.Full_Name_AR || r.Full_Name_EN || r.Email}
+        — <span style="opacity:.8">${r.Employee_ID}</span>
+      </div>`).join('');
+  }
+
+  // open profile
+  grid.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-id]');
+    if (b){ openEmployeeProfile(b.dataset.id); suggest.classList.add('hidden'); }
+  });
+  suggest.addEventListener('click', e=>{
+    const it = e.target.closest('[data-id]');
+    if (it){ openEmployeeProfile(it.dataset.id); suggest.classList.add('hidden'); }
+  });
+
+  let timer = null;
+  function runSearch(){
+    const query = (q.value||'').trim();
+    google.script.run
+      .withSuccessHandler(rows=>{
+        renderCards(rows||[]);
+        if (query.length >= 2) renderSuggest(rows||[]);
+        else { suggest.classList.add('hidden'); suggest.innerHTML=''; }
+      })
+      .withFailureHandler(err=>console.error(err))
+      .hrSearchEmployees(query, 25);
+  }
+  window.__HR_RUNSEARCH = runSearch;
+
+  q.addEventListener('input', ()=>{
+    if ((q.value||'').length < 2){ suggest.classList.add('hidden'); suggest.innerHTML=''; }
+    clearTimeout(timer); timer = setTimeout(runSearch, 200);
+  });
+  btn.addEventListener('click', runSearch);
+  q.addEventListener('keydown', e=>{ if (e.key === 'Enter') runSearch(); });
+
+  runSearch();
+}
+
+/* ====================== Project Profile Modal (robust) ====================== */
+function openProjectProfile(projectId){
+  const viewId = 'PRJ_PROFILE';
+  const pickId = String(projectId||'').trim();
+  const roleId = (window.CURRENT_ROLE_ID || 'ALL');
+
+  $('formOverlay')?.classList.remove('hidden');
+  $('formModal')?.classList.remove('hidden');
+  $('formTitle').textContent = 'ملف المشروع';
+  $('formBody').innerHTML =
+    '<div class="p-6 text-center" style="color:var(--moonlight);opacity:.85">... جاري تحميل البيانات ...</div>';
+
+  google.script.run
+    .withSuccessHandler((data)=>{
+      if (!data || data.ok !== true || !Array.isArray(data.tabs) || data.tabs.length === 0){
+        $('formBody').innerHTML = `<div class="p-6 text-center text-red-400">لا توجد بيانات لهذا المشروع (${pickId})</div>`;
+        return;
+      }
+
+      // ===== toolbar (Edit)
+      const toolbar = document.createElement('div');
+      toolbar.className = 'flex items-center justify-end mb-3';
+      toolbar.innerHTML = `
+        <button id="prjEditBtn"
+                class="px-4 py-2 rounded-lg font-semibold"
+                style="background:#013220;color:#fff;border:1px solid rgba(255,255,255,.15);">
+          تحرير
+        </button>`;
+      toolbar.querySelector('#prjEditBtn').onclick = ()=>{
+
+        // choose form key for project data (defensive lookup)
+        const formKey = (window.PRJ_FORM_KEYS && window.PRJ_FORM_KEYS.PRJ_DATA) ? window.PRJ_FORM_KEYS.PRJ_DATA : 'PRJ001';
+
+        // build one-shot seed (prefer KV items) — IMPROVED to include label-only items
+        let seed = { Project_ID: pickId };
+        try{
+          for (const t of data.tabs||[]){
+            for (const s of t.sections||[]){
+              for (const b of s.blocks||[]){
+                if (b.type === 'KV'){
+                  if (Array.isArray(b.items)) {
+                    b.items.forEach(it => {
+                      // Prioritize explicit 'field' key (this matches form.targetColumn)
+                      if (it.field) {
+                        seed[it.field] = it.value;
+                      } else if (it.targetColumn) {
+                        // some schemas may use targetColumn
+                        seed[it.targetColumn] = it.value;
+                      } else if (it.label) {
+                        // fallback: include the label text as a seed key as well (helps when schema uses labels)
+                        // also include a sanitized label key (no spaces) as an extra attempt
+                        try { seed[it.label] = it.value; } catch(_) {}
+                        try {
+                          const k = String(it.label||'').replace(/\s+/g,'_').replace(/[^\w_]/g,'');
+                          if (k) seed[k] = it.value;
+                        } catch(_) {}
+                      }
+                    });
+                  } else if (b.label) {
+                    // singleton KV (older format)
+                    if (b.field) {
+                      seed[b.field] = b.value;
+                    } else {
+                      try { seed[b.label] = b.value; } catch(_) {}
+                      try {
+                        const k = String(b.label||'').replace(/\s+/g,'_').replace(/[^\w_]/g,'');
+                        if (k) seed[k] = b.value;
+                      } catch(_) {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }catch(e){ console.warn('Seed build error:', e); }
+
+        // Clear any existing draft for this form so the seed is guaranteed to be used
+        try { __df_clear(formKey); } catch(_) {}
+
+        // Set the one-shot seed and open the form for edit
+        window.__DF_SEED = seed;
+        const moon = $('floatingMoon'); if (moon) moon.dataset.formKey = (formKey || 'PRJ001');
+        openForm();
+      };
+
+      // ===== tabs shelf
+      const shelf = document.createElement('div');
+      shelf.className = 'tab-shelf mb-4';
+      const row = document.createElement('div');
+      row.className = 'flex gap-2 overflow-x-auto justify-center';
+      shelf.appendChild(row);
+
+      const panes = document.createElement('div');
+
+      function addBtn(tab, idx){
+        const b = document.createElement('button');
+        b.id = `prj-tab-${tab.id}`;
+        b.className = `tab-btn ${idx===0?'tab-active':'tab-inactive'} px-4 py-2 text-sm font-semibold`;
+        b.textContent = tab.name || ('تبويب ' + (idx+1));
+        b.onclick = ()=>{
+          document.querySelectorAll('.tab-btn').forEach(x=>{ x.classList.remove('tab-active'); x.classList.add('tab-inactive'); });
+          b.classList.add('tab-active'); b.classList.remove('tab-inactive');
+          panes.querySelectorAll('.prj-pane').forEach(x=>x.classList.add('hidden'));
+          document.getElementById('prj-pane-'+tab.id)?.classList.remove('hidden');
+        };
+        row.appendChild(b);
+      }
+
+      function renderBlocks(section){
+        if (!section.blocks || !section.blocks.length)
+          return '<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد بيانات</div>';
+
+        let html = '';
+
+        const kvBlocks = section.blocks.filter(b=>b.type==='KV');
+        if (kvBlocks.length){
+          kvBlocks.forEach(k=>{
+            const items = Array.isArray(k.items) ? k.items : (k.label ? [{label:k.label, value:k.value}] : []);
+            html += `<div class="grid md:grid-cols-3 gap-4" style="color:var(--moonlight)">` +
+              items.map(it=>`
+                <div style="background:rgba(184,197,209,.06);border:1px solid rgba(184,197,209,.25);border-radius:12px;padding:10px 12px;">
+                  <div class="text-sm" style="opacity:.7">${it.label || ''}</div>
+                  <div class="text-base font-semibold">${_fmtMaybeDate_(it.value)}</div>
+                </div>`).join('') +
+              `</div>`;
+          });
+        }
+
+        section.blocks.filter(b=>b.type==='TABLE').forEach(t=>{
+          if (!t.headers?.length || !t.rows?.length){
+            html += `<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد بيانات</div>`;
+          } else {
+            html += `
+              <div class="overflow-auto mt-3">
+                <table class="min-w-full text-right" style="color:var(--moonlight)">
+                  <thead class="sticky top-0 bg-[var(--ancient-wood)]">
+                    <tr>${t.headers.map(h=>`<th class="px-3 py-2">${h}</th>`).join('')}</tr>
+                  </thead>
+                  <tbody>
+                    ${t.rows.map(r=>`
+                      <tr class="border-t border-[rgba(184,197,209,.15)]">
+                        ${t.headers.map(h=>`<td class="px-3 py-2">${_fmtMaybeDate_(r[h])}</td>`).join('')}
+                      </tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>`;
+          }
+        });
+
+        section.blocks.filter(b=>b.type==='ATTACH').forEach(a=>{
+          const items = Array.isArray(a.items) ? a.items : [];
+          html += `
+            <div class="emp-attach-grid" style="display:grid;gap:12px;margin-top:12px;">
+              ${items.length ? items.map(x => `
+                <div style="
+                  display:flex;align-items:center;justify-content:space-between;
+                  background:rgba(184,197,209,.06);
+                  border:1px solid rgba(184,197,209,.25);
+                  border-radius:14px;padding:10px 12px;">
+                  <div style="color:var(--moonlight);opacity:.9;font-weight:600;" class="truncate">${x.label || 'مرفق'}</div>
+                  ${x.url ? `<a class="tab-btn px-3 py-1" href="${x.url}" target="_blank" rel="noopener">فتح</a>` : ''}
+                </div>`).join('')
+              : `<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد مرفقات</div>`}
+            </div>`;
+        });
+
+        return html || '<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد بيانات</div>';
+      }
+
+      // build UI
+      data.tabs.forEach((tab, idx)=>{
+        addBtn(tab, idx);
+        const pane = document.createElement('div');
+        pane.id = 'prj-pane-' + tab.id;
+        pane.className = `prj-pane ${idx===0?'':'hidden'}`;
+
+        (tab.sections||[]).forEach(sec=>{
+          const card = document.createElement('div');
+          card.className = 'section-card';
+          card.innerHTML = `
+            <h3 class="title-glow text-lg font-bold mb-4">${sec.header || ''}</h3>
+            ${renderBlocks(sec)}
+          `;
+          pane.appendChild(card);
+        });
+
+        panes.appendChild(pane);
+      });
+
+      $('formBody').innerHTML = '';
+      $('formBody').appendChild(toolbar);
+      $('formBody').appendChild(shelf);
+      $('formBody').appendChild(panes);
+
+      // 2-col attachments on md+
+      document.querySelectorAll('.emp-attach-grid').forEach(grid=>{
+        function applyCols(){ grid.style.gridTemplateColumns = (window.innerWidth >= 768 ? '1fr 1fr' : '1fr'); }
+        applyCols(); window.addEventListener('resize', applyCols);
+      });
+    })
+    .withFailureHandler((err)=>{
+      console.error('[PRJ PROFILE] error:', err);
+      $('formBody').innerHTML = `<div class="p-6 text-center text-red-400">تعذر تحميل الملف</div>`;
+    })
+    .apiGetProjectProfileDynamic(viewId, pickId, roleId);
+}
+
+
+
+
+/* ====================== Projects: cards + search + Add (wired) ====================== */
+function loadProjectsView(){
+  // hide global top-right add
+  document.getElementById('moduleAddBtn')?.classList.add('hidden');
+
+  const content = $('dynamic-content'); if (!content) return;
+
+  content.innerHTML = `
+    <div class="fade-in">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-3xl font-bold" style="color:var(--moonlight)">إدارة المشاريع</h2>
+        <button id="prjAddBtn" type="button" class="tab-active px-5 py-3 font-bold" style="cursor:pointer">
+          + إضافة مشروع جديد
+        </button>
+      </div>
+
+      <div class="mb-4 flex items-center gap-3">
+        <input id="prjSearch" placeholder="البحث عن مشروع (الاسم، الوصف، العميل، الحالة)..."
+               class="flex-1 px-4 py-3 rounded-2xl input-3d text-base">
+        <button id="prjSearchBtn" class="tab-active px-5 py-3 font-bold">بحث</button>
+      </div>
+
+      <div id="prjAutosuggest" class="autosuggest-panel hidden"></div>
+
+      <!-- Cards grid -->
+      <div id="prjCards" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </div>`;
+
+  // --- wire Add (this is the button above Search) ---
+  (function wireAdd(){
+    const add = $('prjAddBtn');
+    if (!add) return;
+    add.dataset.formkey = 'PRJ001';                         // <-- your Projects Form_ID
+    add.onclick = () => {
+      window.__REQUESTED_FORM_KEY = add.dataset.formkey;
+      openForm();
+    };
+  })();
+
+  const q = $('prjSearch');
+  const btn = $('prjSearchBtn');
+  const grid = $('prjCards');
+  const suggest = $('prjAutosuggest');
+
+  function fmtDate(d){ return _fmtMaybeDate_(d)||''; }
+  function pct(v){ const n = Number(v)||0; return Math.max(0,Math.min(100,n))+'%'; }
+
+  function renderCards(rows){
+    grid.innerHTML = (rows||[]).map(r=>{
+      const status = (r.Status||'').trim()||'نشط';
+      const badgeClr = status==='معلق' ? '#38a169' : '#2dbd6e';
+      return `
+        <div class="chart-card" style="padding:0">
+          <div class="p-5">
+            <span style="background:${badgeClr};color:#fff;border-radius:14px;padding:2px 10px;font-weight:700;font-size:12px">${status}</span>
+            <div class="mt-2 flex items-center justify-between">
+              <div class="font-extrabold text-xl" style="color:var(--moonlight)">${r.Project_Name||'(بدون اسم)'}</div>
+              <div class="text-sm" style="opacity:.8;color:var(--moonlight)">${r.Client_Name||''}</div>
+            </div>
+
+            <div class="mt-3">
+              <div class="flex items-center justify-between text-sm" style="color:var(--moonlight);opacity:.9">
+                <span>0%</span><span>التقدم</span>
+              </div>
+              <div style="height:6px;border-radius:8px;background:rgba(184,197,209,.15);overflow:hidden">
+                <div style="width:0%;height:100%;background:#2dbd6e"></div>
+              </div>
+            </div>
+
+            <div class="mt-3 flex items-center justify-between text-sm" style="color:var(--moonlight);opacity:.9">
+              <div>البداية: ${fmtDate(r.Start_Date)}</div>
+              <div>💰 الميزانية: ${r.Proj_Budget||r.Budget||0}</div>
+            </div>
+          </div>
+
+          <button class="w-full text-right px-5 py-3 hover:bg-[rgba(184,197,209,.05)]"
+                  data-id="${r.Project_ID}" style="color:var(--moonlight);border-top:1px solid rgba(184,197,209,.12)">
+            فتح الملف →
+          </button>
+        </div>`;
+    }).join('');
+  }
+
+  function renderSuggest(rows){
+    if (!rows?.length){ suggest.classList.add('hidden'); suggest.innerHTML=''; return; }
+    suggest.classList.remove('hidden');
+    suggest.innerHTML = rows.slice(0,8).map(r=>`
+      <div class="autosuggest-item" data-id="${r.Project_ID}">
+        ${r.Project_Name || '(بدون اسم)'} — <span style="opacity:.8">${r.Project_ID}</span>
+      </div>`).join('');
+  }
+
+  // open profile from card or suggest
+  grid.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-id]');
+    if (b){ openProjectProfile(b.dataset.id); suggest.classList.add('hidden'); }
+  });
+  suggest.addEventListener('click', e=>{
+    const it = e.target.closest('[data-id]');
+    if (it){ openProjectProfile(it.dataset.id); suggest.classList.add('hidden'); }
+  });
+
+  let timer = null;
+  function runSearch(){
+    const query = (q.value||'').trim();
+    google.script.run
+      .withSuccessHandler(rows=>{
+        renderCards(rows||[]);
+        if (query.length >= 2) renderSuggest(rows||[]);
+        else { suggest.classList.add('hidden'); suggest.innerHTML=''; }
+      })
+      .withFailureHandler(err=>console.error(err))
+      .prjSearchProjects(query, 40);
+  }
+  window.__PRJ_RUNSEARCH = runSearch;
+
+  q.addEventListener('input', ()=>{
+    if ((q.value||'').length < 2){ suggest.classList.add('hidden'); suggest.innerHTML=''; }
+    clearTimeout(timer); timer = setTimeout(runSearch, 200);
+  });
+  btn.addEventListener('click', runSearch);
+  q.addEventListener('keydown', e=>{ if (e.key==='Enter') runSearch(); });
+
+  runSearch();
+}
+
+
+/* ====================== FINANCE: Direct Expenses — UI (FULL BLOCK) ====================== */
+
+/** Top-level view loader (called from selectSubTab('finance','direct-expenses')) */
+/**
+ * Loads the UI for the Direct Expenses view, including search, table, and the "Add" button.
+ * This version is restructured to prevent ReferenceErrors by defining helpers before execution.
+ */
+function loadFinanceDirectExpensesView() {
+      console.log("--- loadFinanceDirectExpensesView STARTED ---"); // <<< ADD THIS
+    // STEP 1: Get the container element for the view.
+    const host = document.getElementById('dynamic-content');
+    if (!host) {
+        console.error("Dynamic content host not found!");
+        return;
+    }
+
+    // STEP 2: Render all the necessary HTML for the view.
+    host.innerHTML = `
+    <div class="fade-in">
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-3xl font-bold" style="color:var(--moonlight)">المصروفات المباشرة</h2>
+      </div>
+
+      <div class="mb-4 flex items-center gap-3">
+        <button id="dexOpenBtn"
+                class="px-5 py-3 font-bold rounded-xl"
+                style="background:#16a34a;color:#fff;border:1px solid rgba(255,255,255,.15);box-shadow:0 8px 20px rgba(22,163,74,.25)">
+          + إضافة مصروف مباشر
+        </button>
+        <input id="dexSearch" placeholder="ابحث (مشروع، مورد، وصف...)"
+               class="flex-1 px-4 py-3 rounded-2xl input-3d text-base">
+        <button id="dexSearchBtn" class="tab-active px-5 py-3 font-bold">بحث</button>
+      </div>
+
+      <div class="chart-card p-0 overflow-auto">
+        <table class="min-w-full text-right" style="color:var(--moonlight)">
+          <thead class="sticky top-0" style="background:var(--ancient-wood)">
+            <tr>
+              <th class="px-4 py-3">الكود</th>
+              <th class="px-4 py-3">المشروع</th>
+              <th class="px-4 py-3">التاريخ</th>
+              <th class="px-4 py-3">الوصف</th>
+              <th class="px-4 py-3">المورد</th>
+              <th class="px-4 py-3">التصنيف</th>
+              <th class="px-4 py-3">المبلغ</th>
+            </tr>
+          </thead>
+          <tbody id="dexTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+    // STEP 3: Define all local helper functions and variables.
+    // This scoped '$' selector is now safely defined before it is used.
+    const $ = (sel) => host.querySelector(sel);
+
+    /** Renders rows into the direct expenses table. */
+    function renderDexRows(rows) {
+        const body = $('#dexTableBody');
+        if (!body) return;
+        if (!rows || !rows.length) {
+            body.innerHTML = `
+        <tr><td colspan="7" class="px-4 py-6 text-center" style="opacity:.8;color:var(--moonlight)">
+          لا توجد بيانات
+        </td></tr>`;
+            return;
+        }
+        body.innerHTML = rows.map(r => `
+      <tr class="border-t border-[rgba(184,197,209,.15)] hover:bg-[rgba(184,197,209,.05)]">
+        <td class="px-4 py-2">${r.DirectExp_ID || ''}</td>
+        <td class="px-4 py-2">${r.Project_ID || ''}</td>
+        <td class="px-4 py-2">${r.Date || ''}</td>
+        <td class="px-4 py-2">${r.Description || ''}</td>
+        <td class="px-4 py-2">${r.Vendor || ''}</td>
+        <td class="px-4 py-2">${[r.Category, r.Level_1, r.Level_2].filter(Boolean).join(' / ')}</td>
+        <td class="px-4 py-2">${Number(r.Amount || 0).toLocaleString()}</td>
+      </tr>
+    `).join('');
+    }
+
+    /** Prepares and opens the direct expense cart modal. */
+    function onOpenCart() {
+        try {
+            installDexCartModalOnce();
+            openDirectExpenseCart();
+        } catch (e) {
+            console.error(e);
+            if (typeof showToast === 'function') {
+                showToast('تعذر فتح العربة', 'err');
+            }
+        }
+    }
+
+    /** Runs a search for direct expenses and calls renderDexRows with the results. */
+    function runFinDexSearchLocal() {
+        const q = ($('#dexSearch')?.value || '').trim();
+        const body = $('#dexTableBody');
+        if (body) {
+            body.innerHTML = `
+        <tr><td colspan="7" class="px-4 py-6 text-center" style="opacity:.8;color:var(--moonlight)">
+          جارِ التحميل...
+        </td></tr>`;
+        }
+        google.script.run
+            .withSuccessHandler(rows => renderDexRows(rows || []))
+            .withFailureHandler(err => {
+                console.error(err);
+                if (body) body.innerHTML = `
+          <tr><td colspan="7" class="px-4 py-6 text-center text-red-400">تعذر التحميل</td></tr>`;
+            })
+            .finSearchDirectExpenses(q, 200, '');
+    }
+
+    // STEP 4: Attach all event listeners now that the elements and functions exist.
+    $('#dexOpenBtn')?.addEventListener('click', onOpenCart);
+    $('#dexSearchBtn')?.addEventListener('click', runFinDexSearchLocal);
+    $('#dexSearch')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') runFinDexSearchLocal();
+    });
+
+    // STEP 5: Run the initial search to populate the table.
+    runFinDexSearchLocal();
+        console.log("--- loadFinanceDirectExpensesView FINISHED ---"); // <<< ADD THIS
+
+}
+
+
+/* ====================== FIN: Direct Expenses – Cart Controller ====================== */
+/* This block matches the IDs and data-action used in your loadFinanceDirectExpensesView() */
+(function(){
+
+  // Local cart state
+  if (!window.__DEX_CART__) window.__DEX_CART__ = { lines: [] };
+
+  // ---------- Helpers ----------
+  function fmt(n){ 
+    const v = Number(n||0);
+    return isFinite(v) ? v.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) : '0';
+  }
+  function parseN(v){
+    if (v == null || v === '') return 0;
+    const s = String(v).replace(/,/g,'').trim();
+    const n = Number(s);
+    return isFinite(n) ? n : 0;
+  }
+  function computeLineTotals(line){
+    const qty = parseN(line.qty);
+    const u   = parseN(line.unitPrice);
+    const tot = (line.totalPrice != null && line.totalPrice !== '') 
+                  ? parseN(line.totalPrice) 
+                  : (qty * u);
+    return { qty, unitPrice: u, total: tot };
+  }
+
+  // ---------- Totals ----------
+  function applyTotals(){
+    const el = document.getElementById('dexTotals');
+    if (!el) return;
+    let sum = 0;
+    (window.__DEX_CART__.lines||[]).forEach(l => {
+      sum += computeLineTotals(l).total;
+    });
+    el.textContent = `الإجمالي: ${fmt(sum)} جنيه`;
+  }
+
+  // ---------- Render Cart ----------
+  function renderLines(){
+    const host = document.getElementById('dexCartLines'); if (!host) return;
+    const lines = window.__DEX_CART__.lines;
+
+    if (!lines.length){
+      host.innerHTML = `<div class="text-sm" style="color:var(--moonlight);opacity:.7">لا توجد عناصر في السلة</div>`;
+      applyTotals();
+      return;
+    }
+
+    host.innerHTML = lines.map((ln, idx)=>`
+      <div class="flex items-start gap-3 p-3 rounded-xl"
+           style="background:rgba(184,197,209,.06);border:1px solid rgba(184,197,209,.18)">
+        <div class="flex-1">
+          <div class="font-semibold" style="color:var(--moonlight)">${ln.name || ln.materialId}</div>
+          <div class="text-xs" style="opacity:.8;color:var(--moonlight)">
+            ${ln.category || ''} ${ln.sub1?'› '+ln.sub1:''} ${ln.sub2?'› '+ln.sub2:''}
+          </div>
+          <div class="mt-2 grid md:grid-cols-4 gap-2">
+            <input data-line="${idx}" data-key="qty" type="number" step="0.01"
+                   class="px-3 py-2 rounded-lg input-3d" placeholder="الكمية" value="${ln.qty ?? 1}">
+            <input data-line="${idx}" data-key="unitPrice" type="number" step="0.01"
+                   class="px-3 py-2 rounded-lg input-3d" placeholder="سعر الوحدة" value="${ln.unitPrice ?? 0}">
+            <input data-line="${idx}" data-key="totalPrice" type="number" step="0.01"
+                   class="px-3 py-2 rounded-lg input-3d" placeholder="الإجمالي (اختياري)" 
+                   value="${ln.totalPrice ?? (ln.unitPrice * (ln.qty||1))}">
+            <input data-line="${idx}" data-key="unit"
+                   class="px-3 py-2 rounded-lg input-3d" placeholder="الوحدة" value="${ln.unit ?? ''}">
+          </div>
+        </div>
+        <button data-action="dex-remove" data-index="${idx}"
+                class="px-3 py-2 rounded-lg" style="background:#7a1f1f;color:#fff">حذف</button>
+      </div>
+    `).join('');
+
+    // bind inputs
+    host.querySelectorAll('input[data-line]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const idx = Number(inp.dataset.line);
+        const key = String(inp.dataset.key);
+        window.__DEX_CART__.lines[idx][key] = inp.value;
+
+        // auto-recalc when qty changes
+        if (key === 'qty'){
+          const ln = window.__DEX_CART__.lines[idx];
+          const newTot = parseN(ln.unitPrice) * parseN(ln.qty);
+          ln.totalPrice = newTot;
+          const totInput = host.querySelector(`input[data-line="${idx}"][data-key="totalPrice"]`);
+          if (totInput) totInput.value = newTot;
+        }
+
+        applyTotals();
+      });
+    });
+
+    // remove
+    host.querySelectorAll('[data-action="dex-remove"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = Number(btn.dataset.index);
+        window.__DEX_CART__.lines.splice(i,1);
+        renderLines();
+      });
+    });
+
+    applyTotals();
+  }
+
+  // ---------- Add Line ----------
+  function addLine(item){
+    if (!window.__DEX_CART__) window.__DEX_CART__ = { lines: [] };
+    const unit   = item.unit || item.Default_Unit || '';
+    const uprice = (item.price != null ? Number(item.price) : 0);
+    const qty    = 1;
+    const total  = uprice * qty;
+
+    window.__DEX_CART__.lines.push({
+      materialId: item.id || '',
+      name:       item.name || '',
+      category:   item.cat || item.category || '',
+      sub1:       item.sub1 || item.Subcategory || '',
+      sub2:       item.sub2 || item.Sub2 || '',
+      unit:       unit,
+      qty:        qty,
+      unitPrice:  uprice,
+      totalPrice: total
+    });
+
+    renderLines();
+  }
+  window.addLine = addLine;
+
+  // ---------- Project Picker ----------
+  function populateProjects(defaultProjectId){
+    const ddl = document.getElementById('dexMetaProject'); if (!ddl) return;
+    ddl.innerHTML = `<option value="">...جارِ التحميل</option>`;
+    google.script.run
+      .withSuccessHandler(list=>{
+        ddl.innerHTML = `<option value="">اختر...</option>` + (list||[]).map(p =>
+          `<option value="${p.id}">${p.id} — ${p.name}${p.client ? ' — ' + p.client : ''}</option>`
+        ).join('');
+        if (defaultProjectId){
+          ddl.value = defaultProjectId;
+        } else if (window.CURRENT_PROJECT_ID){
+          ddl.value = window.CURRENT_PROJECT_ID;
+        }
+      })
+      .withFailureHandler(err=>{
+        console.error('[apiGetProjectsLite]', err);
+        ddl.innerHTML = `<option value="">تعذر تحميل المشاريع</option>`;
+      })
+      .apiGetProjectsLite(200);
+  }
+
+  // ---------- Save ----------
+  window.saveDirectExpenseCart = function(){
+    const projectId = document.getElementById('dexMetaProject')?.value?.trim()
+                   || window.CURRENT_PROJECT_ID || '';
+    if (!projectId){ showToast?.('اختر المشروع أولًا','err'); return; }
+
+    let lines = window.__DEX_CART__.lines
+      .map(l => ({ materialId:l.materialId, name:l.name, unit:l.unit, qty:l.qty,
+                   unitPrice:l.unitPrice, totalPrice:l.totalPrice,
+                   category:l.category, sub1:l.sub1, sub2:l.sub2 }))
+      .filter(x => Number(String(x.qty||'').replace(/,/g,'')) > 0);
+
+    if (!lines.length){ showToast?.('أضف عناصر إلى السلة','err'); return; }
+
+    const meta = {
+      projectId,
+      vendor:      document.getElementById('dexMetaVendor')?.value || '',
+      payStatus:   document.getElementById('dexMetaPayStatus')?.value || '',
+      payMethod:   document.getElementById('dexMetaPayMethod')?.value || '',
+      vatIncluded: !!document.getElementById('dexMetaVatIncluded')?.checked,
+      vatRate:     Number(document.getElementById('dexMetaVatRate')?.value||0),
+      date:        document.getElementById('dexMetaDate')?.value || '',
+      notes:       document.getElementById('dexMetaNotes')?.value || '',
+      userId:      (window.CURRENT_USER_ID || 'SYSTEM')
+    };
+
+    const btn = document.getElementById('dexCartSave');
+    if (btn){ btn.disabled = true; btn.textContent = 'جاري الحفظ...'; }
+
+    google.script.run
+      .withSuccessHandler(res => {
+        if (btn){ btn.disabled = false; btn.textContent = 'حفظ'; }
+        const ok = !!res?.success;
+        showToast?.(ok ? 'تم الحفظ بنجاح' : (res?.message || 'فشل الحفظ'), ok ? 'ok' : 'err');
+        if (ok){
+          closeDirectExpenseCart();
+          if (window.__DEX_CART__) window.__DEX_CART__.lines = [];
+          runFinDexSearch?.();
+        }
+      })
+      .withFailureHandler(err => {
+        if (btn){ btn.disabled = false; btn.textContent = 'حفظ'; }
+        console.error('[apiFinSaveDirectExpensesBatch]', err);
+        showToast?.('تعذر الحفظ','err');
+      })
+      .apiFinSaveDirectExpensesBatch({ meta, lines });
+  };
+
+  // ---------- Open ----------
+  window.openDirectExpenseCart = function(defaultProjectId){
+    installDexCartModalOnce();
+
+    document.getElementById('dexCartOverlay').style.display = 'block';
+    document.getElementById('dexCartModal').style.display   = 'flex';
+    document.body.classList.add('modal-open');
+
+    document.getElementById('dexTabMeta')?.click();
+
+    const d = document.getElementById('dexMetaDate');
+    if (d && !d.value) d.value = new Date().toISOString().slice(0,10);
+
+    window.__DEX_CART__.lines = [];
+    renderLines();
+
+    populateProjects(defaultProjectId||'');
+
+    loadDexCatalogOnce(()=>{ buildDexFilters(); applyDexFilter(); });
+    wireDexCatalogUI?.();
+  };
+
+  window.closeCart = function(){
+    document.getElementById('dexCartOverlay').style.display = 'none';
+    document.getElementById('dexCartModal').style.display   = 'none';
+  };
+
+  // ---------- List search ----------
+  window.runFinDexSearch = function(){
+    const q = document.getElementById('dexSearch')?.value || '';
+    google.script.run
+      .withSuccessHandler(rows => {
+        const body = document.getElementById('dexTableBody'); if (!body) return;
+        body.innerHTML = (rows||[]).map(r => `
+          <tr class="border-t border-[rgba(184,197,209,.15)] hover:bg-[rgba(184,197,209,.05)]">
+            <td class="px-4 py-2">${r.DirectExp_ID||''}</td>
+            <td class="px-4 py-2">${r.Project_ID||''}</td>
+            <td class="px-4 py-2">${r.Date||''}</td>
+            <td class="px-4 py-2">${r.Description||''}</td>
+            <td class="px-4 py-2">${r.Vendor||''}</td>
+            <td class="px-4 py-2">${[r.Category,r.Level_1,r.Level_2].filter(Boolean).join(' › ')}</td>
+            <td class="px-4 py-2">${fmt(r.Amount||0)}</td>
+          </tr>
+        `).join('');
+      })
+      .withFailureHandler(err => {
+        console.error('[finSearchDirectExpenses]', err);
+        const body = document.getElementById('dexTableBody'); 
+        if (body) body.innerHTML = '';
+      })
+      .finSearchDirectExpenses(q, 200, '');
+  };
+
+})(); // end IIFE
+
+/* expose (optional) */
+window.loadFinanceDirectExpensesView = loadFinanceDirectExpensesView;
+window.openDirectExpenseCart = openDirectExpenseCart;
+
+
+/* ====================== Employee Profile Modal ====================== */
+function openEmployeeProfile(employeeId){
+  const viewId = 'EMP_PROFILE';                // the layout key you configured in SYS_Profile_View
+  const pickId = String(employeeId||'').trim();
+  const roleId = window.CURRENT_ROLE_ID || 'ALL';
+
+  $('formOverlay')?.classList.remove('hidden');
+  $('formModal')?.classList.remove('hidden');
+  $('formTitle').textContent = 'ملف الموظف';
+  $('formBody').innerHTML = '<div class="p-6 text-center" style="color:var(--moonlight);opacity:.85">... جاري تحميل البيانات ...</div>';
+
+  google.script.run
+    .withSuccessHandler(data=>{
+      if (!data?.ok) {
+        $('formBody').innerHTML = `<div class="p-6 text-center text-red-400">لا توجد بيانات لهذا الموظف</div>`;
+        return;
+      }
+
+      // ===== Toolbar (Edit button)
+      const toolbar = document.createElement('div');
+      toolbar.className = 'flex items-center justify-end mb-3';
+      toolbar.innerHTML = `
+        <button id="empEditBtn"
+                class="px-4 py-2 rounded-lg font-semibold"
+                style="background:#013220;color:#fff;border:1px solid rgba(255,255,255,.15);">
+          تحرير
+        </button>`;
+      
+      // **FIX: Corrected Edit Button Logic**
+      toolbar.querySelector('#empEditBtn').onclick = () => {
+        const formKey = 'EMP001'; // The key for the employee form
+        
+        // Fetch the raw, simple data object needed to pre-fill the form
+        google.script.run
+          .withSuccessHandler(profileData => {
+            if (profileData && profileData.ok && profileData.personal) {
+              // Use the 'personal' object to seed the form draft and open it
+              openFormForEdit(formKey, profileData.personal);
+            } else {
+              alert('Could not fetch employee data for editing.');
+            }
+          })
+          .withFailureHandler(err => {
+            alert('Error fetching employee data.');
+            console.error(err);
+          })
+          .apiHrGetEmployeeProfile(pickId); // Use the original function that returns the simple data object
+      };
+
+      // ===== Build tabs UI
+      const shelf = document.createElement('div');
+      shelf.className = 'tab-shelf mb-4';
+      const row = document.createElement('div');
+      row.className = 'flex gap-2 overflow-x-auto justify-center';
+      shelf.appendChild(row);
+
+      const panes = document.createElement('div');
+
+      function addBtn(tab, idx){
+        const b = document.createElement('button');
+        b.id = `emp-tab-${tab.id}`;
+        b.className = `tab-btn ${idx===0?'tab-active':'tab-inactive'} px-4 py-2 text-sm font-semibold`;
+        b.textContent = tab.name;
+        b.onclick = ()=>{
+          document.querySelectorAll('.tab-btn').forEach(x=>{ x.classList.remove('tab-active'); x.classList.add('tab-inactive'); });
+          b.classList.add('tab-active'); b.classList.remove('tab-inactive');
+          panes.querySelectorAll('.emp-pane').forEach(x=>x.classList.add('hidden'));
+          document.getElementById('emp-pane-'+tab.id)?.classList.remove('hidden');
+        };
+        row.appendChild(b);
+      }
+
+      function renderBlocks(section){
+        if (!section.blocks || !section.blocks.length) return '<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد بيانات</div>';
+        let html = '';
+
+        const kvs  = section.blocks.filter(b=>b.type==='KV');
+        const tbls = section.blocks.filter(b=>b.type==='TABLE');
+        const atts = section.blocks.filter(b=>b.type==='ATTACH');
+
+        if (kvs.length){
+          html += `<div class="grid md:grid-cols-3 gap-4" style="color:var(--moonlight)">` +
+            kvs.map(k=>`
+              <div style="background:rgba(184,197,209,.06);border:1px solid rgba(184,197,209,.25);border-radius:12px;padding:10px 12px;">
+                <div class="text-sm" style="opacity:.7">${k.label || ''}</div>
+                <div class="text-base font-semibold">${_fmtMaybeDate_(k.value)}</div>
+              </div>`).join('') + `</div>`;
+        }
+
+        tbls.forEach(t=>{
+          if (!t.headers?.length || !t.rows?.length){
+            html += `<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد بيانات</div>`;
+          } else {
+            html += `
+            <div class="overflow-auto mt-3">
+              <table class="min-w-full text-right" style="color:var(--moonlight)">
+                <thead class="sticky top-0 bg-[var(--ancient-wood)]">
+                  <tr>${t.headers.map(h=>`<th class="px-3 py-2">${h}</th>`).join('')}</tr>
+                </thead>
+                <tbody>
+                  ${t.rows.map(r=>`
+                    <tr class="border-t border-[rgba(184,197,209,.15)]">
+                      ${t.headers.map(h=>`<td class="px-3 py-2">${_fmtMaybeDate_(r[h])}</td>`).join('')}
+                    </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>`;
+          }
+        });
+
+        // attachments: 2 per row, only label + open button
+        atts.forEach(a=>{
+          const items = Array.isArray(a.items) ? a.items : [];
+          html += `
+            <div class="emp-attach-grid" style="display:grid;gap:12px;margin-top:12px;">
+              ${items.length ? items.map(x => `
+                <div style="
+                  display:flex;align-items:center;justify-content:space-between;
+                  background:rgba(184,197,209,.06);
+                  border:1px solid rgba(184,197,209,.25);
+                  border-radius:14px;padding:10px 12px;">
+                  <div style="color:var(--moonlight);opacity:.9;font-weight:600;" class="truncate">${x.label || 'مرفق'}</div>
+                  ${x.url ? `<a class="tab-btn px-3 py-1" href="${x.url}" target="_blank" rel="noopener">فتح</a>` : ''}
+                </div>`).join('') : `<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد مرفقات</div>`}
+            </div>`;
+        });
+
+        return html || '<div class="p-2 opacity-70" style="color:var(--moonlight)">لا توجد بيانات</div>';
+      }
+
+      data.tabs.forEach((tab, idx)=>{
+        addBtn(tab, idx);
+
+        const pane = document.createElement('div');
+        pane.id = 'emp-pane-' + tab.id;
+        pane.className = `emp-pane ${idx===0?'':'hidden'}`;
+
+        (tab.sections||[]).forEach(sec=>{
+          const card = document.createElement('div');
+          card.className = 'section-card';
+          card.innerHTML = `
+            <h3 class="title-glow text-lg font-bold mb-4">${sec.header || ''}</h3>
+            ${renderBlocks(sec)}
+          `;
+          pane.appendChild(card);
+        });
+
+        panes.appendChild(pane);
+      });
+
+      $('formBody').innerHTML = '';
+      $('formBody').appendChild(toolbar);  // <-- Edit button bar
+      $('formBody').appendChild(shelf);
+      $('formBody').appendChild(panes);
+
+      // 2-column attachments on md+
+      document.querySelectorAll('.emp-attach-grid').forEach(grid=>{
+        function applyCols(){ grid.style.gridTemplateColumns = (window.innerWidth >= 768 ? '1fr 1fr' : '1fr'); }
+        applyCols();
+        window.addEventListener('resize', applyCols);
+      });
+    })
+    .withFailureHandler(err=>{
+      $('formBody').innerHTML = `<div class="p-6 text-center text-red-400">تعذر تحميل الملف</div>`;
+      console.error(err);
+    })
+    .apiGetEmployeeProfileDynamic(viewId, pickId, roleId);
+}
+
+/* ====================== Charts ====================== */
+function initializeCharts(){
+  const a=$('attendanceChart')?.getContext('2d');
+  if(a){
+    new Chart(a,{
+      type:'line',
+      data:{
+        labels:['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+        datasets:[{label:'معدل الحضور',data:[92,94,91,95,93,96],borderColor:'#b8860b',backgroundColor:'rgba(184,134,11,.1)',tension:.4}]
+      },
+      options:{responsive:true}
+    });
+  }
+  const f=$('financeChart')?.getContext('2d');
+  if(f){
+    new Chart(f,{
+      type:'bar',
+      data:{
+        labels:['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+        datasets:[
+          {label:'الإيرادات',data:[2100000,2300000,2200000,2500000,2400000,2600000],backgroundColor:'rgba(139,105,20,.8)'},
+          {label:'المصروفات',data:[1800000,1900000,1850000,2000000,1950000,2100000],backgroundColor:'rgba(184,134,11,.6)'}
+        ]
+      },
+      options:{responsive:true}
+    });
+  }
+}
+function initializeModuleCharts(){
+  const c1=$('moduleChart1')?.getContext('2d');
+  if(c1){
+    new Chart(c1,{type:'doughnut',data:{labels:['مكتمل','قيد التنفيذ','متأخر'],datasets:[{data:[65,25,10],backgroundColor:['#8b6914','#b8860b','#d4af37']}]}});
+  }
+  const c2=$('moduleChart2')?.getContext('2d');
+  if(c2){
+    new Chart(c2,{type:'line',data:{labels:['الأسبوع 1','الأسبوع 2','الأسبوع 3','الأسبوع 4'],datasets:[{label:'الأداء',data:[85,92,88,95],borderColor:'#b8860b',backgroundColor:'rgba(184,134,11,.1)',tension:.4}]}});
+  }
+}
+
+// Unified DOM ready handler — keep only this one
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    // ping build (non-blocking)
+    try { google.script.run.withSuccessHandler(()=>{}).pingBuild(); } catch(e){}
+
+    // ---- remove & hide the global add controls (top-right & floating fab)
+    try {
+      const ids = ['globalAddBtn','addBtn','btnAdd','addButton','floatingMoon'];
+      ids.forEach(id => {
+        try { const el = document.getElementById(id); if (el) el.remove(); } catch(e){}
+      });
+      const style = document.createElement('style');
+      style.textContent = `#globalAddBtn, #addBtn, #btnAdd, #addButton, #floatingMoon { display:none !important; }`;
+      document.head.appendChild(style);
+    } catch(e){ console && console.error('[unified DOM] remove add controls', e); }
+
+    // ===== Enable "تسجيل الخروج" + clear form drafts on logout =====
+    try {
+      const lb = document.getElementById('btnLogout');
+      if (lb){
+        // ensure single listener (remove previous if any)
+        try { lb.replaceWith(lb.cloneNode(true)); } catch(e){}
+        const newLb = document.getElementById('btnLogout');
+        newLb.addEventListener('click', ()=>{
+          try{ clearAllDrafts(); }catch(e){}
+          try{ window.__DF_SEED = null; }catch(e){}
+          try{ closeFormModal?.(); }catch(e){}
+          try{ showToast('تم تسجيل الخروج','ok',1200); }catch(e){}
+          try{ google.script.run.logout?.(); }catch(e){}
+          setTimeout(()=>{ window.location.href='?page=login'; }, 300);
+        });
+      }
+    } catch(e){ console && console.error('[unified DOM] wire logout button', e); }
+
+    // ---- run other scattered initializers here (idempotent) ----
+    try { if (typeof ensureSidebarWired === 'function') ensureSidebarWired(); } catch(e){}
+    try { if (typeof wireGlobalClosers === 'function') wireGlobalClosers(); } catch(e){}
+    try { if (typeof wireLogoutMenu === 'function') wireLogoutMenu(); } catch(e){}
+    try { if (typeof wireLogoutButton === 'function') wireLogoutButton(); } catch(e){}
+    try { if (typeof run === 'function') run(); } catch(e){ /* run may be called elsewhere; ignore errors */ }
+
+  } catch(e){
+    console && console.error('[DOMContentLoaded unified]', e);
+  }
+}, { once: true });
+
+
+
+/* ====================== Draft storage (per user/form) ====================== */
+function __df_userId(){ return (window.CURRENT_USER_ID || 'ANON'); }
+function __df_key(formKey){ return `DF:${__df_userId()}:${formKey}`; }
+function __df_load(formKey){ try{ return JSON.parse(localStorage.getItem(__df_key(formKey))||'{}'); }catch{ return {}; } }
+function __df_save(formKey, obj){ try{ localStorage.setItem(__df_key(formKey), JSON.stringify(obj||{})); }catch(e){} }
+function __df_clear(formKey){ try{ localStorage.removeItem(__df_key(formKey)); }catch(e){} }
+function __df_bindAutoSave(formKey, container){
+  const handler = () => {
+    if (window.__DF_SUPPRESS_SAVE) return;     // <— add this
+    try{
+      const data = {};
+      container.querySelectorAll('input[name], select[name], textarea[name]').forEach(el=>{
+        if (el.type === 'file') return;
+        data[el.name] = el.value;
+      });
+      __df_save(formKey, data);
+    }catch(e){}
+  };
+  container.addEventListener('input', handler, true);
+  container.addEventListener('change', handler, true);
+  container.addEventListener('flatpickrValueUpdate', handler, true);
+}
+
+// Take a one-shot snapshot of current form into draft
+function __df_snapshot(formKey, container){
+  try{
+    const data = {};
+    container.querySelectorAll('input[name], select[name], textarea[name]').forEach(el=>{
+      if (el.type === 'file') return;
+      data[el.name] = el.value;
+    });
+    __df_save(formKey, data);
+  }catch(e){}
+}
+// Seed a draft object (legacy API). Also set one-shot global seed.
+function __df_seed(formKey, obj){
+  try{
+    if (!formKey) return;
+    const o = obj || {};
+    window.__DF_SEED = {...o};
+    __df_save(formKey, o);
+  }catch(e){}
+}
+// REPLACEMENT: Open form for edit — set both REQUESTED_FORM_KEY and DF_SEED so openForm will find the key reliably
+function openFormForEdit(formKey, seedObj){
+  if (!formKey) return;
+  try {
+    // Indicate we're opening in "edit" mode (used later by renderDynamicFormModel)
+    window.__REQUESTED_OPEN_MODE = 'edit';
+
+    // Defensive: clear any local draft for this formKey so the one-shot seed will be used.
+    // (This prevents stale/empty localStorage draft from blocking the seed values.)
+    try { __df_clear(formKey); } catch(_) {}
+
+    // One-shot seed (renderDynamicFormModel consumes this)
+    window.__DF_SEED = seedObj || {};
+
+    // Set canonical requested key used by openForm
+    window.__REQUESTED_FORM_KEY = String(formKey || '').trim();
+
+    // Mirror to any floating/add button dataset (defensive)
+    const moon = document.getElementById('floatingMoon') || document.getElementById('floating_moon') || null;
+    if (moon) {
+      try { moon.dataset.formkey = window.__REQUESTED_FORM_KEY; } catch(e){}
+    }
+  } catch(e){
+    console && console.error('[openFormForEdit] ', e);
+  }
+  // Finally open the form (openForm will resolve the key from REQUESTED_FORM_KEY or dataset)
+  openForm();
+}
+
+
+
+
+
+/* ====================== Open Modal & Fetch Model (final) ====================== */
+function openForm(){
+  // Resolve requested form key (robust: check multiple places)
+  let requestedKey = String(window.__REQUESTED_FORM_KEY || '').trim();
+
+  // 1) if not set, check a few known UI datasets (moduleAddBtn / addBtn / topAddBtn)
+  if (!requestedKey){
+    const b = (document.getElementById('moduleAddBtn') || document.getElementById('addBtn') || document.getElementById('topAddBtn'));
+    requestedKey = String(b?.dataset?.formkey || '').trim();
+  }
+
+  // 2) fallback: check floating / "moon" button dataset used by some flows
+  if (!requestedKey){
+    const moon = document.getElementById('floatingMoon') || document.getElementById('floating_moon') || null;
+    if (moon) requestedKey = String(moon?.dataset?.formkey || moon?.dataset?.formKey || '').trim();
+  }
+
+  // 3) final fallback: if __CURRENT_FORM_KEY is set (editing), prefer it
+  if (!requestedKey){
+    requestedKey = String(window.__CURRENT_FORM_KEY || '').trim();
+  }
+
+  if (!requestedKey){
+    if (typeof showToast === 'function') showToast('لا يوجد Form_ID لهذا القسم','err'); else alert('لا يوجد Form_ID لهذا القسم');
+    return;
+  }
+
+  // modal shell
+  const overlay = $('formOverlay');
+  const modal   = $('formModal');
+  const titleEl = $('formTitle');
+  const body    = $('formBody');
+
+  overlay?.classList.remove('hidden');
+  modal?.classList.remove('hidden');
+  if (titleEl) titleEl.textContent = '...';
+  if (body) body.innerHTML = '<div class="text-center text-lg" style="color:var(--moonlight);opacity:.8">جاري تحميل النموذج...</div>';
+
+  const roleId = window.CURRENT_ROLE_ID || 'ALL';
+
+  google.script.run
+    .withSuccessHandler(model => {
+      try {
+        if (!model || !model.tabs || !model.tabs.length) {
+          if (body) body.innerHTML = '<div class="text-center text-yellow-400">لا توجد سكيما لهذا المفتاح.</div>';
+          return;
+        }
+
+        window.__CURRENT_FORM_KEY = String(model.formId || requestedKey).trim();
+        if (titleEl) titleEl.textContent = (model.formTitle && model.formTitle.trim() !== '') ? model.formTitle : 'نموذج';
+        renderDynamicFormModel(model, window.__CURRENT_FORM_KEY);
+      } catch (e) {
+        console.error('[openForm] success handler error:', e);
+        if (body) body.innerHTML = '<div class="text-center text-red-400">تعذر تحميل السكيما.</div>';
+      }
+    })
+    .withFailureHandler(err => {
+      console.error('[openForm] failure getting schema:', err);
+      if (body) body.innerHTML = '<div class="text-center text-red-400">تعذر تحميل السكيما.</div>';
+    })
+    .getHRFormSchema(requestedKey, roleId);
+}
+
+
+/* ====================== Render Dynamic Form ====================== */
+function renderDynamicFormModel(model, formKey){
+  // Track which form is open
+  window.__CURRENT_FORM_KEY = formKey;
+
+  const body = $('formBody');
+  body.innerHTML = '';
+
+  // If this open was NOT marked as an 'edit', treat as "open new" => clear drafts so form starts blank.
+  // This prevents "Add New" from showing previous edited record's draft.
+  try {
+    if (String(window.__REQUESTED_OPEN_MODE || '').toLowerCase() !== 'edit') {
+      try { __df_clear(formKey); } catch(_) {}
+    }
+  } catch(_) {}
+
+  /* ---------- Draft handling (Edit seed -> one-time) ---------- */
+  let draft = __df_load(formKey) || {};
+  // If there's no meaningful draft, but a one-shot seed exists, use it.
+  if ((!draft || Object.keys(draft).length === 0) && window.__DF_SEED && typeof window.__DF_SEED === 'object'){
+    try {
+      draft = { ...window.__DF_SEED };
+      __df_save(formKey, draft);        // persist so it survives close/reopen
+    } catch(e){}
+  }
+  // Consume the one-shot seed once only
+  window.__DF_SEED = null;
+  // Reset requested open mode after consuming
+  window.__REQUESTED_OPEN_MODE = null;
+
+  // smart key normalizer for label -> possible key names
+  const makeAltKeysFromLabel = (label) => {
+    if (!label) return [];
+    try {
+      const keys = [];
+      const s = String(label || '');
+      keys.push(s); // original label
+      // underscore sanitized (remove punctuation)
+      const k = s.replace(/\s+/g,'_').replace(/[^\w\u0600-\u06FF_]/g,''); // keep Arabic chars too
+      if (k && !keys.includes(k)) keys.push(k);
+      // ascii fallback (remove non-ascii)
+      const ascii = s.replace(/[^\x00-\x7F]/g,'').replace(/\s+/g,'_').replace(/[^\w_]/g,'');
+      if (ascii && !keys.includes(ascii)) keys.push(ascii);
+      // lowercase versions
+      keys.push(...keys.map(x => String(x).toLowerCase()));
+      return Array.from(new Set(keys));
+    } catch(_) { return [label]; }
+  };
+
+  // pickVal now tries multiple possible places:
+  // 1) draft[name]
+  // 2) draft matches the field.label (and variants)
+  // 3) draft matches sanitized label variants
+  // 4) fallback to provided default (defVal)
+  const pickVal = (name, defVal, fieldLabel) => {
+    try {
+      // exact key (canonical)
+      if (name && draft && draft[name] !== undefined && draft[name] !== null && String(draft[name]) !== '') return draft[name];
+
+      // try targetColumn-like variants in draft (if fieldLabel provided)
+      if (fieldLabel && draft){
+        const altKeys = makeAltKeysFromLabel(fieldLabel);
+        for (const k of altKeys){
+          if (draft[k] !== undefined && draft[k] !== null && String(draft[k]) !== '') return draft[k];
+        }
+      }
+
+      // lastly fallback to defVal
+      return (defVal !== undefined && defVal !== null) ? defVal : '';
+    } catch(e){ return defVal ?? ''; }
+  };
+
+  // optional: a flag some autosave handlers check before saving
+  window.__DF_SUPPRESS_SAVE = false;
+
+  // Tabs shelf
+  const shelf = document.createElement('div');
+  shelf.className = 'tab-shelf mb-4';
+  const shelfRow = document.createElement('div');
+  shelfRow.className = 'flex gap-2 overflow-x-auto justify-center';
+  shelf.appendChild(shelfRow);
+
+  const panes = document.createElement('div');
+
+  // Helpers → format to dd/mm/yyyy and dd/mm/yyyy HH:mm (display only)
+  const toDMY = (val) => {
+    if (!val) return '';
+    if (typeof _toDMY_ === 'function') return _toDMY_(val);
+    try{
+      if (val instanceof Date){
+        const d = String(val.getDate()).padStart(2,'0');
+        const m = String(val.getMonth()+1).padStart(2,'0');
+        const y = val.getFullYear();
+        return `${d}/${m}/${y}`;
+      }
+      const s = String(val).trim();
+      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);   // yyyy-mm-dd
+      if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+      m = s.match(/^(\d{4})\/(\d{2})\/(\d{2})/);     // yyyy/mm/dd
+      if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+      m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (m) return `${m[1].padStart(2,'0')}/${m[2].padStart(2,'0')}/${m[3]}`;
+      return s;
+    }catch{ return String(val||''); }
+  };
+  const toDMY_HM = (val) => {
+    if (!val) return '';
+    try{
+      if (val instanceof Date){
+        const d = String(val.getDate()).padStart(2,'0');
+        const m = String(val.getMonth()+1).padStart(2,'0');
+        const y = val.getFullYear();
+        const hh = String(val.getHours()).padStart(2,'0');
+        const mm = String(val.getMinutes()).padStart(2,'0');
+        return `${d}/${m}/${y} ${hh}:${mm}`;
+      }
+      const s = String(val).trim();
+      const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})/);
+      if (m) return `${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`;
+      const m2 = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\s+(\d{2}):(\d{2})$/);
+      if (m2) return `${m2[1].padStart(2,'0')}/${m2[2].padStart(2,'0')}/${m2[3]} ${m2[4]}:${m2[5]}`;
+      return toDMY(s);
+    }catch{ return String(val||''); }
+  };
+
+  /* ---------- Build tabs/fields ---------- */
+  model.tabs.forEach((tab, idx) => {
+    // tab button
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = `tab-btn-${idx}`;
+    btn.className = `tab-btn ${idx===0?'tab-active':'tab-inactive'} px-4 py-2 text-sm font-semibold relative`;
+    btn.textContent = tab.name || (`TAB ${idx+1}`);
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('tab-active'); b.classList.add('tab-inactive'); });
+      btn.classList.remove('tab-inactive'); btn.classList.add('tab-active');
+      panes.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+      $('pane-'+idx)?.classList.remove('hidden');
+    };
+    shelfRow.appendChild(btn);
+
+    // tab pane
+    const pane = document.createElement('div');
+    pane.id = 'pane-'+idx;
+    pane.className = `tab-pane ${idx===0?'':''} ${idx===0?'':'hidden'}`.trim();
+
+    (tab.sections||[]).forEach(sec => {
+      const card = document.createElement('div');
+      card.className = 'section-card';
+
+      const title = document.createElement('h3');
+      title.className = 'title-glow text-lg font-bold mb-4';
+      title.textContent = sec.header || 'قسم';
+      card.appendChild(title);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid md:grid-cols-2 gap-4';
+
+      (sec.fields||[]).forEach(field => {
+        const wrap = document.createElement('div');
+
+        const label = document.createElement('label');
+        label.className = 'block mb-2 font-semibold';
+        label.style.color = 'var(--moonlight)';
+        label.style.opacity = '.9';
+        label.textContent = field.label || field.targetColumn || field.fieldId || '';
+        if (field.mandatory) label.classList.add('req');
+        wrap.appendChild(label);
+
+        let input;
+        const t = String(field.type || 'text').toLowerCase();
+
+        if (t === 'dropdown'){
+          input = document.createElement('select');
+          input.className = 'w-full px-4 py-3 rounded-2xl select-3d text-base';
+          const def = document.createElement('option'); def.value=''; def.text='اختر...';
+          input.appendChild(def);
+          (field.options||[]).forEach(o => {
+            const opt = document.createElement('option');
+            opt.value = o.value;
+            opt.text  = o.text_ar; // Arabic label only
+            input.appendChild(opt);
+          });
+          input.value = pickVal(field.targetColumn, field.defaultValue, field.label);
+
+        } else if (t==='date' || t==='time' || t==='datetime' || t==='datetime-local'){
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'w-full px-4 py-3 rounded-2xl input-3d text-base';
+
+          if (t === 'date') {
+            input.dataset.picker = 'date';
+            input.placeholder = 'dd/mm/yyyy';
+            input.value = toDMY(pickVal(field.targetColumn, field.defaultValue, field.label));
+          } else if (t === 'time') {
+            input.dataset.picker = 'time';
+            input.placeholder = 'HH:mm';
+            input.value = String(pickVal(field.targetColumn, field.defaultValue, field.label) || '').trim();
+          } else {
+            input.dataset.picker = 'datetime';
+            input.placeholder = 'dd/mm/yyyy HH:mm';
+            input.value = toDMY_HM(pickVal(field.targetColumn, field.defaultValue, field.label));
+          }
+
+        } else if (t === 'number' || t === 'currency'){
+          input = document.createElement('input');
+          input.type = 'number';
+          input.step = 'any';
+          input.className = 'w-full px-4 py-3 rounded-2xl input-3d text-base';
+          input.placeholder = label.textContent;
+          input.value = pickVal(field.targetColumn, field.defaultValue, field.label);
+
+        } else if (t === 'attachment'){
+          input = document.createElement('input');
+          input.type = 'file';
+          input.multiple = true;
+          input.className = 'w-full text-sm';
+
+        } else {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'w-full px-4 py-3 rounded-2xl input-3d text-base';
+          input.placeholder = label.textContent;
+
+          if (t === 'auto' || t === 'autogen' || t === 'autofill'){
+            input.readOnly = true;
+            input.style.background = 'rgba(184,197,209,0.08)';
+            input.style.borderColor = 'rgba(184,197,209,0.4)';
+            const val = pickVal(field.targetColumn, field.defaultValue, field.label);
+            input.value = String(val || '');
+          } else {
+            input.value = pickVal(field.targetColumn, field.defaultValue, field.label);
+          }
+        }
+
+        const nameKey = field.targetColumn || field.fieldId || '';
+        if (nameKey){
+          input.name = nameKey;
+          input.id = nameKey;
+        } else {
+          // if no explicit name, set a safe id to allow findEntityId etc.
+          const safeId = (field.label || 'fld_'+Math.random().toString(36).slice(2,8)).replace(/\s+/g,'_').replace(/[^\w\u0600-\u06FF_]/g,'');
+          input.id = safeId;
+        }
+        if (field.mandatory) input.required = true;
+
+        wrap.appendChild(input);
+        grid.appendChild(wrap);
+      });
+
+      card.appendChild(grid);
+      pane.appendChild(card);
+    });
+
+    panes.appendChild(pane);
+  });
+
+  /* ---------- Attachments tab (generic) ---------- */
+  (function addAttachmentsTab(){
+    const idx = panes.children.length;
+
+    // tab button
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = `tab-btn-${idx}`;
+    btn.className = 'tab-btn tab-inactive px-4 py-2 text-sm font-semibold relative';
+    btn.textContent = 'المرفقات';
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('tab-active'); b.classList.add('tab-inactive'); });
+      btn.classList.remove('tab-inactive'); btn.classList.add('tab-active');
+      panes.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`pane-${idx}`)?.classList.remove('hidden');
+    };
+    shelfRow.appendChild(btn);
+
+    // tab pane
+    const pane = document.createElement('div');
+    pane.id = `pane-${idx}`;
+    pane.className = 'tab-pane hidden';
+    pane.innerHTML = `
+      <div class="section-card">
+        <h3 class="title-glow text-lg font-bold mb-4">المرفقات</h3>
+        <div class="space-y-3">
+          <input id="attFiles" type="file" multiple class="w-full text-sm">
+          <div id="attList" class="space-y-2" style="color:var(--moonlight);"></div>
+          <button id="attUploadBtn" class="tab-active px-6 py-2 font-bold">رفع كل الملفات</button>
+        </div>
+        <p class="mt-3 text-sm" style="opacity:.7;color:var(--moonlight)">
+        </p>
+      </div>`;
+    panes.appendChild(pane);
+
+    // wiring (same as before)...
+    const filesInput = pane.querySelector('#attFiles');
+    const listDiv    = pane.querySelector('#attList');
+    const uploadBtn  = pane.querySelector('#attUploadBtn');
+
+    let pickedFiles = []; // [{file, labelInput}]
+
+    filesInput.addEventListener('change', () => {
+      listDiv.innerHTML = '';
+      pickedFiles = [];
+      [...filesInput.files].forEach((file) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-3';
+
+        const name = document.createElement('div');
+        name.textContent = file.name;
+        name.style.flex = '1';
+
+        const label = document.createElement('input');
+        label.type = 'text';
+        label.placeholder = 'اسم المرفق / الوصف';
+        label.className = 'px-3 py-2 rounded-lg input-3d';
+        label.style.minWidth = '200px';
+
+        row.appendChild(name);
+        row.appendChild(label);
+        listDiv.appendChild(row);
+
+        pickedFiles.push({file, labelInput: label});
+      });
+    });
+
+    function readFileAsDataURL(file){
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    function findEntityId(){
+      const candidates = Array.from(document.querySelectorAll('#formBody input[name$="_ID"], #formBody input[readonly][name]'));
+      for (const el of candidates){
+        const v = (el.value || '').trim();
+        if (v) return v;
+      }
+      return '';
+    }
+
+    uploadBtn.addEventListener('click', async () => {
+      if (!pickedFiles.length){ showToast('اختر ملفات أولاً','err'); return; }
+
+      const entityId = findEntityId();
+      if (!entityId){
+        showToast('لا يوجد رقم سجل (ID). احفظ السجل أولاً','err');
+        return;
+      }
+
+      uploadBtn.disabled = true; uploadBtn.textContent = 'جاري الرفع...';
+
+      try {
+        const payload = [];
+        for (const {file, labelInput} of pickedFiles){
+          const dataUrl = await readFileAsDataURL(file);
+          payload.push({
+            name: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            data: (dataUrl || ''),
+            label: (labelInput.value || '').trim()
+          });
+        }
+
+        const userId = window.CURRENT_USER_ID || 'CURRENT_USER';
+        const formId = String(window.__CURRENT_FORM_KEY || '').trim();
+
+        google.script.run
+          .withSuccessHandler(res => {
+            const ok = !!res?.success;
+            showToast(ok ? (res?.message || 'تم الرفع') : (res?.message || 'فشل الرفع'), ok ? 'ok' : 'err');
+            if (ok){
+              filesInput.value = '';
+              listDiv.innerHTML = '';
+              pickedFiles = [];
+            }
+          })
+          .withFailureHandler(err => {
+            console.error(err);
+            showToast('تعذر رفع المرفقات','err');
+          })
+          .uploadFormAttachments(formId, entityId, payload, userId);
+
+      } catch(e){
+        console.error(e);
+        showToast('فشل تحويل الملفات','err');
+      } finally {
+        uploadBtn.disabled = false; uploadBtn.textContent = 'رفع كل الملفات';
+      }
+    });
+  })();
+
+  body.appendChild(shelf);
+  body.appendChild(panes);
+
+  // Init Flatpickr on date/time inputs
+  loadFlatpickrOnce().then(() => {
+    initDatePickers(body);
+  });
+
+  // Persist draft continuously + initial snapshot so values survive close/reopen
+  __df_bindAutoSave(formKey, body);
+  __df_snapshot(formKey, body);
+
+  // Inline Clear (if footer clear not present)
+  (function ensureInlineClear(){
+    if (document.getElementById('formResetBtn')) return;
+    const bar = document.createElement('div');
+    bar.className = 'flex items-center justify-end mb-3';
+    bar.innerHTML = `
+      <button id="inlineFormClearBtn" class="px-4 py-2 rounded-lg font-semibold"
+              style="background:#8b0000;color:#fff;border:1px solid rgba(255,255,255,.15);">
+        مسح الحقول
+      </button>`;
+    body.insertBefore(bar, shelf);
+
+    const clearBtn = bar.querySelector('#inlineFormClearBtn').onclick = async () => {
+      const ok = await askConfirm('هل تريد مسح الحقول (المسودة)؟','تأكيد');
+      if (!ok) return;
+      __df_clear(formKey);
+      window.__DF_SEED = null;
+      showToast('تم مسح الحقول','ok');
+      renderDynamicFormModel(model, formKey);
+    };
+  })();
+
+  // (rest of save/reset wiring remains unchanged; they operate on DOM elements inside body)
+  // Save and reset wiring will continue to work as before because form structure is the same.
+}
+
+
+/* ====================== Close Modal (keep draft) ====================== */
+function closeFormModal(){
+  try{
+    const key = window.__CURRENT_FORM_KEY || '';
+    const container = $('formBody');
+    if (key && container) __df_snapshot(key, container); // keep draft if user just closes
+  }catch(e){ console.error('Error saving draft on close:', e); }
+  $('formOverlay')?.classList.add('hidden');
+  $('formModal')?.classList.add('hidden');
+}
+
+/* ----- Install global DEX modal once (REPLACE) ----- */
+function installDexCartModalOnce(){
+  if (document.getElementById('dexCartOverlay')) return;
+
+  // ==== local styles just for this modal ====
+  const css = `
+    .dex-no-scrollbar{ scrollbar-width:none; }
+    .dex-no-scrollbar::-webkit-scrollbar{ width:0; height:0; }
+    .dex-panel{ background:rgba(184,197,209,.06); border:1px solid rgba(184,197,209,.18); border-radius:12px; overflow:hidden; }
+    .dex-hdr{ padding:10px 14px; border-bottom:1px solid rgba(184,197,209,.12); display:flex; align-items:center; justify-content:space-between; }
+    .dex-title-strong{ color:var(--moonlight); font-weight:900; }
+    .dex-chip{ padding:.5rem .8rem; border-radius:10px; border:1px solid rgba(184,197,209,.22); background:rgba(184,197,209,.08); color:var(--moonlight); font-weight:800; cursor:pointer; }
+    .dex-btn-green{ background:#16a34a; color:#fff; border-color:transparent; }
+    .dex-btn-gold{ background:linear-gradient(180deg,#f3c34b,#c99a2e); color:#32220c; border-color:transparent; }
+    .dex-input{ width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(184,197,209,.2); background:#1f1a16; color:var(--moonlight); }
+    /* catalog cards (name + price only) */
+    .dex-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    @media (max-width:1280px){ .dex-grid{ grid-template-columns:repeat(3,1fr); } }
+    @media (max-width:980px){  .dex-grid{ grid-template-columns:repeat(2,1fr); } }
+    .dex-card-item{ background:rgba(184,197,209,.06); border:1px solid rgba(184,197,209,.22); border-radius:10px; padding:10px; cursor:pointer; display:grid; grid-template-rows:auto auto; gap:6px; transition:background .15s, transform .06s; }
+    .dex-card-item:hover{ background:rgba(184,197,209,.12); transform:translateY(-1px); }
+    .dex-card-item .dex-title{ color:#f5f7fa; font-weight:900; font-size:.95rem; line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .dex-card-item .dex-price{ color:#e8f0fe; font-weight:800; font-size:.85rem; opacity:.95; }
+    /* cart rows */
+    .dex-line{ display:grid; grid-template-columns:1fr auto 120px 160px; gap:8px; align-items:center; background:#1a1511; border:1px solid rgba(184,197,209,.15); border-radius:12px; padding:10px; }
+    .dex-line-title{ color:var(--moonlight); font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .dex-ctrl{ padding:7px 8px; border-radius:8px; background:#111; border:1px solid rgba(184,197,209,.10); color:var(--moonlight); }
+    .dex-btn-remove{ background:#7a1f1f; color:#fff; border:none; padding:8px 12px; border-radius:10px; font-weight:800; }
+  `;
+  const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
+
+  // ==== markup ====
+  const frag = document.createElement('div');
+  frag.innerHTML = `
+    <div id="dexCartOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:1200;display:none" aria-hidden="true"></div>
+    <div id="dexCartModal" role="dialog" aria-modal="true" style="position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;padding:16px;z-index:1210">
+      <div class="dex-card" style="width:min(1500px,96vw);max-height:92vh;margin-top:22px;background:var(--deep-wood);border:1px solid rgba(232,246,255,1);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.55);display:flex;flex-direction:column;overflow:hidden">
+        
+        <!-- top bar -->
+        <div class="dex-hdr">
+          <div style="display:flex;gap:8px">
+            <button id="dexCartClose" class="dex-chip">إغلاق</button>
+            <button id="dexClearFields" class="dex-chip" style="background:#3b1919;color:#ffd7d7;border-color:rgba(255,215,215,.25)">مسح الحقول</button>
+          </div>
+          <div class="dex-title-strong">إضافة مصروفات مباشرة</div>
+          <button id="dexCartSave" class="dex-chip dex-btn-green">حفظ</button>
+        </div>
+
+        <!-- info row -->
+        <div style="padding:10px 14px;border-bottom:1px solid rgba(184,197,209,.10);display:grid;grid-template-columns: 1.2fr 180px 1fr 1fr 120px 150px;gap:10px;align-items:end">
+          <div><div class="dex-title-strong" style="opacity:.85;margin-bottom:6px;font-weight:800">المشروع</div><select id="dexMetaProject" class="dex-input"></select></div>
+          <div><div class="dex-title-strong" style="opacity:.85;margin-bottom:6px;font-weight:800">التاريخ</div><input id="dexMetaDate" type="date" class="dex-input"></div>
+          <div><div class="dex-title-strong" style="opacity:.85;margin-bottom:6px;font-weight:800">طريقة الدفع</div>
+            <select id="dexMetaPayMethod" class="dex-input">
+              <option value="">اختر…</option><option>نقدًا</option><option>تحويل بنكي</option><option>بطاقة</option><option>شيك</option>
+            </select>
+          </div>
+          <div><div class="dex-title-strong" style="opacity:.85;margin-bottom:6px;font-weight:800">حالة الدفع</div>
+            <select id="dexMetaPayStatus" class="dex-input">
+              <option value="">اختر…</option><option>مدفوع</option><option>معلق</option><option>مدفوع جزئيًا</option>
+            </select>
+          </div>
+          <div><div class="dex-title-strong" style="opacity:.85;margin-bottom:6px;font-weight:800">قيمة الضريبة</div><input id="dexMetaVatRate" type="number" step="0.01" value="0.14" class="dex-input"></div>
+          <div style="display:flex;align-items:center;gap:8px"><input id="dexMetaVatIncluded" type="checkbox" checked><label for="dexMetaVatIncluded" class="dex-title-strong" style="opacity:.85">شامل الضريبة</label></div>
+          <div style="grid-column:1/-1;margin-top:6px">
+            <div class="dex-title-strong" style="opacity:.85;margin-bottom:6px;font-weight:800">ملاحظات</div>
+            <input id="dexMetaNotes" class="dex-input" placeholder="ملاحظات (اختياري)">
+          </div>
+        </div>
+
+        <!-- three columns -->
+        <div style="padding:12px 14px;display:grid;grid-template-columns: 320px 1fr 1.1fr;gap:14px;min-height:0;flex:1">
+          
+          <!-- attachments -->
+          <section class="dex-panel" style="display:flex;flex-direction:column;min-height:0">
+            <div class="dex-hdr"><div class="dex-title-strong">مرفقات</div><button id="dexUploadAll" class="dex-chip dex-btn-gold">رفع كل الملفات</button></div>
+            <div class="dex-panel-body dex-no-scrollbar" style="overflow:auto;padding:10px;display:grid;grid-template-rows:auto 1fr;gap:10px">
+              <input id="dexMetaFiles" type="file" class="dex-input" multiple style="padding:8px;border-radius:10px">
+              <div id="dexFilesList" style="display:flex;flex-direction:column;gap:8px"></div>
+            </div>
+          </section>
+
+          <!-- cart -->
+          <section class="dex-panel" style="display:flex;flex-direction:column;min-height:0">
+            <div class="dex-hdr">
+              <div class="dex-title-strong">السلة</div>
+              <div id="dexTotals" style="color:var(--moonlight)">الإجمالي: 0 جنيه</div>
+            </div>
+            <div id="dexCartColsHead" style="padding:6px 12px;display:grid;grid-template-columns:1fr auto 120px 160px;gap:8px;color:var(--moonlight);opacity:.8;font-weight:800;border-bottom:1px solid rgba(184,197,209,.10)">
+              <div></div><div></div><div>الكمية</div><div>الإجمالي (جنيه)</div>
+            </div>
+            <div id="dexCartLines" class="dex-no-scrollbar" style="overflow:auto;display:flex;flex-direction:column;gap:10px;padding:10px"></div>
+          </section>
+
+          <!-- catalog -->
+          <section class="dex-panel" style="display:flex;flex-direction:column;min-height:0">
+            <div class="dex-hdr" style="gap:8px">
+              <button id="dexPickSearch" class="dex-chip dex-btn-gold">عرض</button>
+              <input id="dexPickQuery" class="dex-input" placeholder="ابحث بالاسم أو الكود">
+            </div>
+            <div style="padding:10px 10px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <select id="dexCat"  class="dex-input"></select>
+              <select id="dexSub1" class="dex-input"></select>
+              <select id="dexSub2" class="dex-input"></select>
+            </div>
+            <div id="dexGridResults" class="dex-no-scrollbar dex-grid" style="overflow:auto;max-height:62vh;padding:10px"></div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(frag);
+
+  // ===== open/close =====
+  const overlay = document.getElementById('dexCartOverlay');
+  const modal   = document.getElementById('dexCartModal');
+  function openModal(){ overlay.style.display='block'; modal.style.display='flex'; document.body.classList.add('modal-open'); }
+  function closeDirectExpenseCart(){ overlay.style.display='none'; modal.style.display='none'; document.body.classList.remove('modal-open'); }
+  window.closeDirectExpenseCart = closeDirectExpenseCart;
+
+  document.getElementById('dexCartClose').onclick = closeDirectExpenseCart;
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) closeDirectExpenseCart(); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.style.display==='flex') closeDirectExpenseCart(); });
+
+  // ===== state / els =====
+  if (!window.__DEX_CART__) window.__DEX_CART__ = { lines: [] };
+  const dexCartLines   = document.getElementById('dexCartLines');
+  const dexGridResults = document.getElementById('dexGridResults');
+  const dexTotalsEl    = document.getElementById('dexTotals'); // used by your global applyTotals
+  const selCat  = document.getElementById('dexCat');
+  const selS1   = document.getElementById('dexSub1');
+  const selS2   = document.getElementById('dexSub2');
+  const qInp    = document.getElementById('dexPickQuery');
+  const btnShow = document.getElementById('dexPickSearch');
+
+  const CATALOG = { all: [], filters:{cat:'',s1:'',s2:'',q:''} };
+
+  // ===== helpers (local) =====
+  const fmt = n => { const v = Number(n||0); return isFinite(v) ? v.toLocaleString('ar-EG',{maximumFractionDigits:2}) : '0'; };
+  const escapeHtml = s => String(s||'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function setOptions(el, values, placeholder){
+    const opts = [`<option value="">${placeholder}</option>`]
+      .concat(values.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`));
+    el.innerHTML = opts.join('');
+    const key = (el===selCat?'cat':(el===selS1?'s1':'s2'));
+    if (values.includes(CATALOG.filters[key])) el.value = CATALOG.filters[key];
+  }
+
+  function refreshFilterLists(){
+    const all = CATALOG.all;
+    const cats = [...new Set(all.map(i=>i.cat||i.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
+    setOptions(selCat, cats, 'التصنيف');
+
+    const s1 = [...new Set(all
+      .filter(i => !CATALOG.filters.cat || (i.cat||i.category)===CATALOG.filters.cat)
+      .map(i=>i.sub1||i.Subcategory).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
+    setOptions(selS1, s1, 'فرعي 1');
+
+    const s2 = [...new Set(all
+      .filter(i => (!CATALOG.filters.cat || (i.cat||i.category)===CATALOG.filters.cat) &&
+                   (!CATALOG.filters.s1  || (i.sub1||i.Subcategory)===CATALOG.filters.s1))
+      .map(i=>i.sub2||i.Sub2).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
+    setOptions(selS2, s2, 'فرعي 2');
+  }
+
+  function applyCatalogFilters(){
+    const q = (CATALOG.filters.q||'').toLowerCase();
+    const list = CATALOG.all.filter(it=>{
+      const cat = it.cat||it.category||'';
+      const s1  = it.sub1||it.Subcategory||'';
+      const s2  = it.sub2||it.Sub2||'';
+      const name= (it.name||'').toLowerCase();
+      const id  = String(it.id||'').toLowerCase();
+      if (CATALOG.filters.cat && cat!==CATALOG.filters.cat) return false;
+      if (CATALOG.filters.s1  && s1 !==CATALOG.filters.s1 ) return false;
+      if (CATALOG.filters.s2  && s2 !==CATALOG.filters.s2 ) return false;
+      if (q && !(name.includes(q) || id.includes(q))) return false;
+      return true;
+    });
+    renderCatalogItems(list);
+  }
+
+  function renderCatalogItems(results){
+    if(!Array.isArray(results)||!results.length){
+      dexGridResults.innerHTML = `<div style="grid-column:1/-1;color:var(--moonlight);opacity:.8;padding:8px">لا نتائج</div>`;
+      dexGridResults.__lastResults=[]; return;
+    }
+    dexGridResults.innerHTML = results.map(it=>`
+      <div class="dex-card-item" data-id="${escapeHtml(it.id)}" role="button" tabindex="0">
+        <div class="dex-title">${escapeHtml(it.name)}</div>
+        <div class="dex-price">${fmt(it.price||0)}</div>
+      </div>
+    `).join('');
+    dexGridResults.__lastResults = results;
+  }
+
+  // single delegated click (prevents double)
+  dexGridResults.onclick = e=>{
+    const card = e.target.closest('.dex-card-item'); if(!card) return;
+    const last = dexGridResults.__lastResults||[]; const it = last.find(x=>String(x.id)===card.dataset.id);
+    if (it){
+      if (typeof window.addLine === 'function') { window.addLine(it); }
+      else {
+        // minimal fallback (no duplicate function definitions)
+        (window.__DEX_CART__ ||= {lines:[]}).lines.push({
+          materialId: it.id||'', name: it.name||'',
+          category: it.cat||'', sub1: it.sub1||'', sub2: it.sub2||'',
+          unit: it.unit||'', qty: 1, unitPrice: Number(it.price||0), totalPrice: Number(it.price||0)
+        });
+        (window.renderCartLines || window.renderLines)?.();
+      }
+    }
+  };
+  dexGridResults.onkeydown = e=>{
+    if(e.key!=='Enter') return;
+    const card = document.activeElement?.closest?.('.dex-card-item'); if(!card) return;
+    const last = dexGridResults.__lastResults||[]; const it = last.find(x=>String(x.id)===card.dataset.id);
+    if (it){
+      if (typeof window.addLine === 'function') window.addLine(it);
+      else { (window.__DEX_CART__ ||= {lines:[]}).lines.push({ materialId: it.id||'', name: it.name||'', unit: it.unit||'', qty:1, unitPrice:Number(it.price||0), totalPrice:Number(it.price||0) }); (window.renderCartLines||window.renderLines)?.(); }
+    }
+  };
+
+  // search & filters
+  let debounce=null;
+  qInp.addEventListener('input', ()=>{ clearTimeout(debounce); debounce=setTimeout(()=>{ CATALOG.filters.q=qInp.value.trim(); applyCatalogFilters(); },250); });
+  btnShow.addEventListener('click', ()=>{ CATALOG.filters.q=qInp.value.trim(); applyCatalogFilters(); });
+  selCat.addEventListener('change', ()=>{ CATALOG.filters.cat=selCat.value||''; CATALOG.filters.s1=''; CATALOG.filters.s2=''; refreshFilterLists(); applyCatalogFilters(); });
+  selS1 .addEventListener('change', ()=>{ CATALOG.filters.s1 =selS1.value||''; CATALOG.filters.s2=''; refreshFilterLists(); applyCatalogFilters(); });
+  selS2 .addEventListener('change', ()=>{ CATALOG.filters.s2 =selS2.value||''; applyCatalogFilters(); });
+
+  // attachments UI
+  const filesInput = document.getElementById('dexMetaFiles');
+  const filesList  = document.getElementById('dexFilesList');
+  let SELECTED_FILES = []; // [{name,type,size,label,dataUrl}]
+  filesInput.addEventListener('change', ()=>{
+    const files = Array.from(filesInput.files||[]);
+    SELECTED_FILES = [];
+    filesList.innerHTML = '';
+    if(!files.length){ return; }
+    files.forEach((f,idx)=>{
+      const row = document.createElement('div');
+      row.style.display='grid';
+      row.style.gridTemplateColumns='1fr 180px';
+      row.style.gap='8px';
+      row.innerHTML = `
+        <input class="dex-input" value="${escapeHtml(f.name)}" disabled>
+        <input class="dex-input" data-i="${idx}" placeholder="اسم / وسم">
+      `;
+      filesList.appendChild(row);
+      const reader = new FileReader();
+      reader.onload = ()=>{ SELECTED_FILES[idx] = { name:f.name, type:f.type, size:f.size, label:'', dataUrl:reader.result }; };
+      reader.readAsDataURL(f);
+      row.querySelector('[data-i]').addEventListener('input', e=>{
+        const i=Number(e.target.dataset.i); if(!SELECTED_FILES[i]) return;
+        SELECTED_FILES[i].label = e.target.value||'';
+      });
+    });
+  });
+
+  document.getElementById('dexUploadAll').addEventListener('click', ()=>{
+    if(!SELECTED_FILES.length){ if(typeof showToast==='function') showToast('اختر ملفات أولاً','err'); else alert('اختر ملفات أولاً'); return; }
+    if (google?.script?.run?.apiUploadFinDexFilesBatch){
+      const payload = SELECTED_FILES.map(f=>({name:f.name,label:f.label,type:f.type,dataUrl:f.dataUrl}));
+      google.script.run
+        .withSuccessHandler(res=>{ if(typeof showToast==='function') showToast(res?.message||'تم الرفع','ok'); else alert('تم الرفع'); })
+        .withFailureHandler(err=>{ console.error(err); if(typeof showToast==='function') showToast('تعذر الرفع','err'); else alert('تعذر الرفع'); })
+        .apiUploadFinDexFilesBatch(payload);
+    }else{
+      if(typeof showToast==='function') showToast('زر الرفع جاهز – اربطه بدالة الرفع لديك (apiUploadFinDexFilesBatch)','ok');
+      else alert('زر الرفع جاهز – اربطه بدالة الرفع لديك (apiUploadFinDexFilesBatch)');
+    }
+  });
+
+  // Clear Fields (مسح الحقول)
+  const btnClear = document.getElementById('dexClearFields');
+  if (btnClear){
+    btnClear.onclick = ()=>{
+      // meta
+      const $$ = id=>document.getElementById(id);
+      $$('dexMetaProject') && ($$('dexMetaProject').value='');
+      $$('dexMetaDate')    && ($$('dexMetaDate').value='');
+      $$('dexMetaPayMethod') && ($$('dexMetaPayMethod').value='');
+      $$('dexMetaPayStatus') && ($$('dexMetaPayStatus').value='');
+      $$('dexMetaVatIncluded') && ($$('dexMetaVatIncluded').checked=true);
+      $$('dexMetaVatRate') && ($$('dexMetaVatRate').value=0.14);
+      $$('dexMetaNotes')   && ($$('dexMetaNotes').value='');
+
+      // cart
+      if (window.__DEX_CART__) window.__DEX_CART__.lines = [];
+      (window.renderCartLines || window.renderLines)?.();
+
+      // attachments
+      const fi = $$('dexMetaFiles'); const fl = $$('dexFilesList');
+      if (fi) fi.value = ''; if (fl) fl.innerHTML = ''; SELECTED_FILES = [];
+
+      // catalog filters & search
+      qInp.value = ''; CATALOG.filters = {cat:'',s1:'',s2:'',q:''};
+      refreshFilterLists(); applyCatalogFilters();
+
+      showToast?.('تم مسح الحقول','ok');
+    };
+  }
+
+  // expose open
+  window.openDirectExpenseCart = function(defaultProjectId){
+    openModal();
+
+    // seed date
+    const d = document.getElementById('dexMetaDate'); if(d && !d.value) d.value = new Date().toISOString().slice(0,10);
+
+    // clear cart
+    window.__DEX_CART__.lines = [];
+    (window.renderCartLines || window.renderLines)?.();
+
+    // load projects
+    const sel = document.getElementById('dexMetaProject');
+    if (google?.script?.run && sel){
+      sel.innerHTML = '<option value="">جارِ التحميل…</option>';
+      google.script.run.withSuccessHandler(list=>{
+        sel.innerHTML = '<option value="">اختر…</option>' + (list||[]).map(p=>`<option value="${p.id}">${p.id} — ${p.name}${p.client?' — '+p.client:''}</option>`).join('');
+        if(defaultProjectId) sel.value = defaultProjectId; else if(window.CURRENT_PROJECT_ID) sel.value = window.CURRENT_PROJECT_ID;
+      }).apiGetProjectsLite(500);
+    }
+
+    // initial catalog fetch (full list), then filter locally
+    if (google?.script?.run){
+      google.script.run
+        .withSuccessHandler(items=>{
+          CATALOG.all = Array.isArray(items)? items.map(x=>({
+            id:x.id, name:x.name, price:Number(x.price||0),
+            cat:x.cat||x.category, sub1:x.sub1||x.Subcategory, sub2:x.sub2||x.Sub2,
+            unit:x.unit||x.Default_Unit
+          })) : [];
+          refreshFilterLists();
+          applyCatalogFilters();
+        })
+        .withFailureHandler(err=>{ console.error('[apiGetMaterialsCatalog]',err); CATALOG.all=[]; refreshFilterLists(); renderCatalogItems([]); })
+        .apiGetMaterialsCatalog('', 500);
+    }else{
+      CATALOG.all=[]; refreshFilterLists(); renderCatalogItems([]);
+    }
+  };
+
+  // Save -> call your global handler
+  document.getElementById('dexCartSave').addEventListener('click', ()=>{
+    if (typeof window.saveDirectExpenseCart === 'function'){
+      window.saveDirectExpenseCart();
+    } else {
+      alert('saveDirectExpenseCart غير معرّفة');
+    }
+  });
+}
+
+/* ===== DEX catalog (single consolidated stack) ===== */
+(function(){
+  // load-once in-memory catalog
+  window.__DEX_CATALOG__ = window.__DEX_CATALOG__ || [];
+// === Global uniqSort (moved here to remove local duplicates) ===
+function uniqSort(arr){
+  try {
+    if (!Array.isArray(arr)) return [];
+    const set = Array.from(new Set((arr||[]).filter(x => x !== null && x !== undefined && String(x).trim() !== '')));
+    try {
+      return set.sort((a,b)=> String(a).localeCompare(String(b), 'ar'));
+    } catch(e){
+      return set.sort();
+    }
+  } catch(e){
+    console && console.error('[uniqSort]', e);
+    return [];
+  }
+}
+
+  function uniqueSorted(arr){
+    return Array.from(new Set((arr||[]).filter(Boolean)))
+      .sort((a,b)=>String(a).localeCompare(String(b),'ar'));
+  }
+
+  function loadDexCatalogOnce(cb){
+  if (Array.isArray(window.__DEX_CATALOG__) && window.__DEX_CATALOG__.length){
+    cb && cb(window.__DEX_CATALOG__); 
+    return;
+  }
+  google.script.run
+    .withSuccessHandler(list => { 
+      window.__DEX_CATALOG__ = Array.isArray(list) ? list : []; 
+      cb && cb(window.__DEX_CATALOG__); 
+    })
+    .withFailureHandler(err => { 
+      console.error('[apiGetMaterialsCatalog]', err); 
+      window.__DEX_CATALOG__ = []; 
+      cb && cb([]); 
+    })
+    .apiGetMaterialsCatalog('', 2000); // big initial pull
+}
+  
+
+  /* ---- Filters ---- */
+
+  function buildDexFilters(){
+  // local safe helper (in case uniqueSorted is not defined globally)
+  /* uniqSort moved to global */ 
+  const all  = window.__DEX_CATALOG__ || [];
+  const cats = uniqSort(all.map(x => x.cat || x.category || ''));
+  const $cat = document.getElementById('dexCat');
+  if (!$cat) return;
+  $cat.innerHTML = `<option value="">مصنفات</option>` + cats.map(c=>`<option>${c}</option>`).join('');
+  buildDexSubFilters();
+}
+  
+function buildDexSubFilters(){
+  /* uniqSort moved to global */ 
+  const selCat = document.getElementById('dexCat')?.value || '';
+  const all    = window.__DEX_CATALOG__ || [];
+  const s1List = uniqSort(
+    all.filter(x => !selCat || (x.cat || x.category || '') === selCat)
+       .map(x => x.sub1 || x.Subcategory || '')
+  );
+  const $s1 = document.getElementById('dexSub1');
+  if (!$s1) return;
+  $s1.innerHTML = `<option value="">كل الفئات</option>` + s1List.map(s=>`<option>${s}</option>`).join('');
+  buildDexSub2();
+}
+
+function buildDexSub2(){
+  /* uniqSort moved to global */ 
+  const selCat = document.getElementById('dexCat')?.value || '';
+  const selS1  = document.getElementById('dexSub1')?.value || '';
+  const all    = window.__DEX_CATALOG__ || [];
+  const s2List = uniqSort(
+    all.filter(x => {
+      const okC = !selCat || (x.cat || x.category || '') === selCat;
+      const ok1 = !selS1  || (x.sub1 || x.Subcategory || '') === selS1;
+      return okC && ok1;
+    }).map(x => x.sub2 || x.Sub2 || '')
+  );
+  const $s2 = document.getElementById('dexSub2');
+  if (!$s2) return;
+  $s2.innerHTML = `<option value="">الكل</option>` + s2List.map(s=>`<option>${s}</option>`).join('');
+}
+
+
+  /* ---- Grid renderer (card = button): NAME + PRICE only ---- */
+
+  function renderDexGrid(items){
+  const grid = document.getElementById('dexGridResults');
+  if (!grid) return;
+
+  if (!Array.isArray(items) || !items.length){
+    grid.innerHTML = `<div class="p-3" style="color:var(--moonlight);opacity:.8">لا نتائج</div>`;
+    // clear any prior handler
+    grid.onclick = null;
+    grid.onkeydown = null;
+    grid.__lastResults = [];
+    return;
+  }
+
+  // Only NAME + PRICE in the card (compact & readable)
+  grid.innerHTML = items.map(r=>{
+    const payload = JSON.stringify({
+      id:   r.id,
+      name: r.name,
+      cat:  r.cat || r.category || '',
+      sub1: r.sub1 || r.Subcategory || '',
+      sub2: r.sub2 || r.Sub2 || '',
+      unit: r.unit || r.Default_Unit || '',
+      price: Number(r.price || 0)
+    }).replace(/'/g,"&apos;");
+    const name = String(r.name||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const price = (Number(r.price||0)).toLocaleString('ar-EG');
+    return `
+      <div class="dex-card-item" data-pick='${payload}' role="button" tabindex="0">
+        <div class="dex-title" style="color:var(--moonlight)">${name}</div>
+        <div class="dex-meta"  style="color:var(--moonlight);font-weight:700">${price}</div>
+      </div>`;
+  }).join('');
+
+  // single delegation (prevents double-add)
+  grid.__lastResults = items.slice();
+  grid.onclick = (e)=>{
+    const card = e.target.closest('.dex-card-item');
+    if (!card) return;
+    try{
+      const it = JSON.parse(card.dataset.pick.replace(/&apos;/g,"'"));
+      if (typeof window.addLine === 'function'){
+        window.addLine(it); // adds with qty=1, unitPrice etc.
+      }else{
+        (window.__DEX_CART__ ||= {lines:[]}).lines.push({
+          materialId: it.id || '',
+          name:       it.name || '',
+          category:   it.cat || '',
+          sub1:       it.sub1 || '',
+          sub2:       it.sub2 || '',
+          unit:       it.unit || '',
+          qty:        1,
+          unitPrice:  Number(it.price || 0),
+          totalPrice: Number(it.price || 0) * 1
+        });
+        if (typeof window.renderCartLines === 'function') window.renderCartLines();
+        else if (typeof window.renderLines === 'function') window.renderLines();
+      }
+    }catch(err){ console.error('bad item payload', err); }
+  };
+  grid.onkeydown = (e)=>{
+    if (e.key !== 'Enter') return;
+    const card = document.activeElement?.closest?.('.dex-card-item');
+    if (!card) return;
+    try{
+      const it = JSON.parse(card.dataset.pick.replace(/&apos;/g,"'"));
+      if (typeof window.addLine === 'function') window.addLine(it);
+    }catch(err){ console.error(err); }
+  };
+}
+  
+
+  /* ---- Apply filters + search ---- */
+
+  function applyDexFilter(){
+  const q  = (document.getElementById('dexPickQuery')?.value || '').trim().toLowerCase();
+  const c  = document.getElementById('dexCat')?.value  || '';
+  const s1 = document.getElementById('dexSub1')?.value || '';
+  const s2 = document.getElementById('dexSub2')?.value || '';
+
+  const base = window.__DEX_CATALOG__ || [];
+  const out = base.filter(x=>{
+    const okC = !c  || (x.cat || x.category || '') === c;
+    const ok1 = !s1 || (x.sub1 || x.Subcategory || '') === s1;
+    const ok2 = !s2 || (x.sub2 || x.Sub2 || '') === s2;
+    const hay = `${x.id||''} ${x.name||''} ${x.cat||x.category||''} ${x.sub1||x.Subcategory||''} ${x.sub2||x.Sub2||''}`.toLowerCase();
+    const okQ = !q || hay.includes(q);
+    return okC && ok1 && ok2 && okQ;
+  });
+
+  renderDexGrid(out.slice(0, 300));
+}
+
+
+  /* ---- Wire once (call after modal is inserted) ---- */
+
+  function wireDexCatalogUI(){
+  const grid = document.getElementById('dexGridResults');
+  if (!grid || grid.__wired) return;      // prevent duplicate wiring
+  grid.__wired = true;
+
+  const $cat = document.getElementById('dexCat');
+  const $s1  = document.getElementById('dexSub1');
+  const $s2  = document.getElementById('dexSub2');
+  const $q   = document.getElementById('dexPickQuery');
+  const $btn = document.getElementById('dexPickSearch');
+
+  if ($cat) $cat.onchange = ()=>{ buildDexSubFilters(); applyDexFilter(); };
+  if ($s1 ) $s1 .onchange = ()=>{ buildDexSub2();      applyDexFilter(); };
+  if ($s2 ) $s2 .onchange = applyDexFilter;
+
+  let t=null;
+  if ($q)   $q.oninput  = ()=>{ clearTimeout(t); t = setTimeout(applyDexFilter, 200); };
+  if ($btn) $btn.onclick = applyDexFilter;
+
+  loadDexCatalogOnce(list=>{
+    buildDexFilters();
+    renderDexGrid(list.slice(0,300));
+  });
+}
+
+// expose & safe auto-wire if modal already exists
+window.wireDexCatalogUI = wireDexCatalogUI;
+if (document.getElementById('dexGridResults')) wireDexCatalogUI();
+  
+  
+})();
+/* ----- close (FULL REPLACEMENT) ----- */
+function closeDirectExpenseCart(){
+  document.getElementById('dexCartOverlay').style.display = 'none';
+  document.getElementById('dexCartModal').style.display   = 'none';
+  document.body.classList.remove('modal-open');
+}
+</script>
+</body>
+</html>
